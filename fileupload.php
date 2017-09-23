@@ -1,11 +1,11 @@
 <?php
-$replay_dir = './replays';
+$replay_dir = 'replays';
 
 header('Content-Type: text/plain; charset=utf-8');
 echo "Welcome to bot uploader";
 /* Attempt MySQL server connection. Assuming you are running MySQL
 server with default setting (user 'root' with no password) */
-$link = new mysqli("localhost", "root", "", "sc2ladders");
+	$link = new mysqli("localhost", "root", "", "sc2ladders");
  
 // Check connection
 if($link->connect_error){
@@ -63,7 +63,7 @@ if($link->connect_error){
 	{
 		$Winner = $Bot2ID;
 	}
-	$sql = "INSERT INTO `results` (`Bot1`, `Bot2`, `Map`, `Winner` ) VALUES ('" . $BOT1ID. "', '" . $Bot2ID . "', '" . mysqli_real_escape_string($link, $_REQUEST['Map']) . "', '" . $Winner . "')";
+	$sql = "INSERT INTO `results` (`Bot1`, `Bot2`, `Map`, `Date`, `Winner` ) VALUES ('" . $BOT1ID. "', '" . $Bot2ID . "', '" . mysqli_real_escape_string($link, $_REQUEST['Map']) . "', NOW(), '" . $Winner . "')";
 			echo $sql;
 		echo "\n<br>\n";
 	$result = $link->query($sql);

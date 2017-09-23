@@ -1,7 +1,9 @@
 <?php
 	class BotResult
 	{
+		public $botid;
 		public $botname;
+		public $author;
 		public $race;
 		public $matches;
 		public $wins;
@@ -16,9 +18,14 @@
 	}
 
 header('Content-Type: text/html; charset=utf-8');
-
-echo "<html>";
-echo "<table>";
+?>
+<html class=''>
+<head>
+<title> Starcraft 2 AI Ladder </title>
+<link rel="stylesheet" href="responsetable.css" type="text/css" />
+</head><body>
+<h1>Starcraft 2 Ladder Results</h1>
+<?php
 
 	
 	$resultsArray = Array();
@@ -30,12 +37,14 @@ echo "<table>";
 	if($link->connect_error){
 		die("ERROR: Could not connect. " . mysqli_connect_error());
 	}
-	$sql = "SELECT * FROM `Participants`";
+	$sql = "SELECT * FROM `participants`";
 	$result = $link->query($sql);
 	while($row = $result->fetch_array(MYSQLI_ASSOC))
 	{
 		$Nextbot = new BotResult();
+		$Nextbot->botid = $row['ID'];
 		$Nextbot->botname = $row['Name'];
+		$Nextbot->author= $row['Author'];
 		switch($row['Race'])
 		{
 			case 0:
@@ -85,8 +94,10 @@ echo "<table>";
 	usort($resultsArray, "cmp");
 	
 	?>
+	<table class="responstable">
 	<tr>
     <th>BotName</th>
+    <th>Author</th>
     <th>Race</th>
     <th>Matches</th>
     <th>Wins</th>
@@ -97,13 +108,28 @@ echo "<table>";
   {
 	  echo "
   <tr>
-    <td>" . $Bot->botname . "</td>
+    <td><a href=\"botmatches.php?id=" . $Bot->botid . "\">" . $Bot->botname . "</a></td>
+    <td>" . $Bot->author . "</td>
     <td>" . $Bot->race . "</td>
     <td>" . $Bot->matches . "</td>
     <td>" . $Bot->wins . "</td>
-    <td>" . $Bot->winpct . "</td>
+    <td>" . number_format((float)$Bot->winpct, 2, '.', '') . "</td>
   </tr>";
   }
+
    ?>
   </table>
+ <?php
+  $sql = "SELECT max(date) AS 'LastDate' from `results`";
+  $LastDateResult = $link->query($sql);
+  if($LastDateRow = $LastDateResult->fetch_array(MYSQLI_ASSOC))
+  {
+	  echo "Last result recieved : " . $LastDateRow['LastDate'] . "<br>";
+  }
+  ?>
+
+<br>
+To get involved, come join us in <a href="https://discord.gg/qTZ65sh">Discord</a>  or <a href="mailto:martin@sc2ai.net">email</a>
+<br>
+All software used to produce this is open source and available on <a href="https://github.com/Cryptyc/Sc2LadderServer">Github</a>
   </html>
