@@ -1,4 +1,7 @@
 <?php
+session_start();
+require_once("header.php");
+
 	class BotResult
 	{
 		public $botid;
@@ -17,34 +20,67 @@
 		return ($a->winpct < $b->winpct) ? 1 : -1;
 	}
 
-header('Content-Type: text/html; charset=utf-8');
-?>
-<html class=''>
-<head>
-<title> Starcraft 2 AI Ladder </title>
-<link rel="stylesheet" href="responsetable.css" type="text/css" />
-</head><body>
-<h1>Starcraft 2 Ladder Results</h1>
-<?php
 
+?>
+                       <div class="header">
+						<h3> Season: Test</h3>
+                        </div>
+			<table class="table table-striped">
+	<tr>
+    <th>BotName</th>
+    <th>Author</th>
+    <th>Race</th>
+    <th>Matches</th>
+    <th>Wins</th>
+    <th>Win Pct</th>
+    <th></th>
+	
+  </tr>
+
+<?php
+	$CurrentSeason = 1;
+	if(!isset($_REQUEST['season']))
+	{
+		$sql = "SELECT * FROM `seasonids` WHERE `Current` = '1'";
+		$result = $link->query($sql);
+		if($row = $result->fetch_assoc())
+		{
+			$CurrentSeason = $row['id'];
+		}
+	}
+	else
+	{
+		$CurrentSeason = $_REQUEST['season'];
+	}
 	
 	$resultsArray = Array();
 	
 	
-	$link = new mysqli("localhost", "root", "", "sc2ladders");
- 
-	// Check connection
-	if($link->connect_error){
-		die("ERROR: Could not connect. " . mysqli_connect_error());
-	}
-	$sql = "SELECT * FROM `participants`";
+
+	$sql = "SELECT `participants`.`Name` AS Name, 
+			`participants`.`ID` AS ID,
+			`participants`.`Race` AS Race,
+			`members`.`username` AS username,
+			`members`.`Alias` AS Alias
+			FROM `participants`, `members`
+			WHERE `participants`.`Author` = `members`.`id`
+			AND `participants`.`Verified` = '1'
+			AND `participants`.`Deactivated` = '0'
+			AND `participants`.`Deleted` = '0'";
 	$result = $link->query($sql);
 	while($row = $result->fetch_array(MYSQLI_ASSOC))
 	{
 		$Nextbot = new BotResult();
 		$Nextbot->botid = $row['ID'];
 		$Nextbot->botname = $row['Name'];
-		$Nextbot->author= $row['Author'];
+		if($row['Alias'] == "")
+		{
+			$Nextbot->author= $row['username'];
+		}
+		else
+		{
+			$Nextbot->author= $row['Alias'];
+		}
 		switch($row['Race'])
 		{
 			case 0:
@@ -61,7 +97,7 @@ header('Content-Type: text/html; charset=utf-8');
 				die("Unknown race" . $row['Race']);
 		
 		}
-		$sql = "SELECT COUNT(*) AS 'Matches' FROM `results` WHERE (Bot1 = '" . $row['ID'] . "' OR Bot2 = '" . $row['ID'] . "')" ;
+		$sql = "SELECT COUNT(*) AS 'Matches' FROM `results` WHERE SeasonId = '" . $CurrentSeason . "' AND (Bot1 = '" . $row['ID'] . "' OR Bot2 = '" . $row['ID'] . "')" ;
 		$participantResult  = $link->query($sql);
 		if($participantRow = $participantResult->fetch_array(MYSQLI_ASSOC))
 		{
@@ -71,7 +107,7 @@ header('Content-Type: text/html; charset=utf-8');
 		{
 			$Nextbot->matches = 0;
 		}
-		$sql = "SELECT COUNT(*) AS 'Wins' FROM `results` WHERE `Winner` = '" . $row['ID'] . "'";
+		$sql = "SELECT COUNT(*) AS 'Wins' FROM `results` WHERE SeasonId = '" . $CurrentSeason . "' AND `Winner` = '" . $row['ID'] . "'";
 		$winsResult = $link->query($sql);
 		if($winsRow = $winsResult->fetch_array(MYSQLI_ASSOC))
 		{
@@ -93,17 +129,6 @@ header('Content-Type: text/html; charset=utf-8');
 	}
 	usort($resultsArray, "cmp");
 	
-	?>
-	<table class="responstable">
-	<tr>
-    <th>BotName</th>
-    <th>Author</th>
-    <th>Race</th>
-    <th>Matches</th>
-    <th>Wins</th>
-    <th>Win Pct</th>
-  </tr>
-  <?php
   foreach ($resultsArray as $Bot)
   {
 	  echo "
@@ -114,6 +139,9 @@ header('Content-Type: text/html; charset=utf-8');
     <td>" . $Bot->matches . "</td>
     <td>" . $Bot->wins . "</td>
     <td>" . number_format((float)$Bot->winpct, 2, '.', '') . "</td>
+    <td> <button type=\"button\" id=\"Details\" class=\"btn btn-info navbar-btn\" onclick=\"window.location.href='botmatches.php?id=" . $Bot->botid . "&season=" . $CurrentSeason . "'\">
+                                <span>View Matches</span>
+                            </button></td>
   </tr>";
   }
 
@@ -126,10 +154,10 @@ header('Content-Type: text/html; charset=utf-8');
   {
 	  echo "Last result recieved : " . $LastDateRow['LastDate'] . "<br>";
   }
+  require_once("footer.php");
   ?>
 
-<br>
-To get involved, come join us in <a href="https://discord.gg/qTZ65sh">Discord</a>  or <a href="mailto:martin@sc2ai.net">email</a>
-<br>
-All software used to produce this is open source and available on <a href="https://github.com/Cryptyc/Sc2LadderServer">Github</a>
-  </html>
+
+
+  </body>
+</html>

@@ -1,39 +1,16 @@
 <?php
+session_start();
 
-	function GetRace($RaceId)
-	{
-		switch($RaceId)
-		{
-			case 0:
-				return "Terran";
-			case 1:
-				return "Zerg";
-			case 2:
-				return "Protoss";
-			default:
-				die("Unknown race" . $RaceId);
-		}
-	}
+require_once("header.php");
 	
 	header('Content-Type: text/html; charset=utf-8');
-?>
-<html class=''>
-<head>
-<link rel="stylesheet" href="responsetable.css" type="text/css" />
-</head><body>
-<?php
+
 
 	if(!isset($_REQUEST['id']))
 	{
 		die("no bot");
 	}
-	
-		$link = new mysqli("localhost", "root", "", "sc2ladders");
 
-	// Check connection
-	if($link->connect_error){
-		die("ERROR: Could not connect. " . mysqli_connect_error());
-	}
 	$sql = "SELECT * FROM `participants` WHERE `ID` = '" . mysqli_real_escape_string($link, $_REQUEST['id']) . "'";
 	$result = $link->query($sql);
 	if(!$row = $result->fetch_assoc())
@@ -41,7 +18,7 @@
 		die("unable to get bot");
 	}
 	$Botrace = GetRace($row['Race']);
-	echo "<h1>Showing results for " . $row['Name'] . " Playing as " . $Botrace . "</h1>";
+	echo "<h3>Showing results for " . $row['Name'] . " Playing as " . $Botrace . "</h3>";
 	
 	$sql = "SELECT `participant1`.`ID` AS P1ID, 
 		`participant1`.`Name` AS P1Name,
@@ -57,11 +34,11 @@
 		`participants` AS `participant2`, 
 		`results` 
 	WHERE
-	(`results`.Bot1='" . mysqli_real_escape_string($link, $_REQUEST['id']) . "' OR `results`.`Bot2`='" . mysqli_real_escape_string($link, $_REQUEST['id']) . "')
+	SeasonId ='" . mysqli_real_escape_string($link, $_REQUEST['season']) . "'
+	AND (`results`.Bot1='" . mysqli_real_escape_string($link, $_REQUEST['id']) . "' OR `results`.`Bot2`='" . mysqli_real_escape_string($link, $_REQUEST['id']) . "')
 	AND `results`.`Bot1`= `participant1`.`ID`
 	AND `results`.`Bot2` = `participant2`.`ID`
 	ORDER BY `MatchDate` DESC";
-	
 	
 	$result = $link->query($sql);
 	if($result->num_rows < 1)
@@ -70,7 +47,7 @@
 		die();
 	}
 ?>
-<table class="responstable">
+			<table class="table table-striped" style="width: auto;">
 	<tr>
 		<th>Time</th>
 		<th>Opponent Name</th>
@@ -124,8 +101,17 @@
 		}
 		else 
 		{
-			echo "<a href=\"" . $row['ReplayFile'] . "\">Replay</a>";
+			echo "<button type=\"button\" id=\"Replay\" class=\"btn btn-info navbar-btn\" onclick=\"window.location.href='" . $row['ReplayFile'] . "'\">
+                                <span>Replay</span>
+                            </button>";
+
+//			echo "<a href=\"" . $row['ReplayFile'] . "\">Replay</a>";
 		}
 		echo "</td></tr>";
 	}
-	echo "</table></html>";
+	echo "</table>";
+	require_once("footer.php");
+	?>
+	</body>
+	</html>
+	
