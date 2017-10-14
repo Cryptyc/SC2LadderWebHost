@@ -16,7 +16,7 @@
 				die("Unknown race" . $RaceId);
 		}
 	}
-	
+
 	function GetRaceId($Race)
 	{
 		if (strcasecmp($Race, "Terran") == 0)
@@ -36,7 +36,7 @@
 			return 3;
 		}
 		return -1;
-		
+
 	}
 	require_once("dbconf.php");
 	$link = new mysqli($host, $username, $password , $db_name);
@@ -58,11 +58,9 @@
         <link rel="stylesheet" href="bootstrap.min.css">
         <!-- Our Custom CSS -->
         <link rel="stylesheet" href="style.css">
+        <script src="js/common.js">
     </head>
     <body>
-
-
-
         <div class="wrapper">
             <!-- Sidebar Holder -->
             <nav id="sidebar">
@@ -138,7 +136,7 @@
 								<?php
 								}
 								?>
-									
+
                             </ul>
                         </div>
                     </div>
