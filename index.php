@@ -10,6 +10,7 @@ require_once("header.php");
 		public $race;
 		public $matches;
 		public $wins;
+		public $crashes;
 		public $winpct;
 	}
 	function cmp($a, $b)
@@ -21,9 +22,27 @@ require_once("header.php");
 	}
 
 
+	$CurrentSeason = 1;
+	if(isset($_REQUEST['season']))
+	{
+		$CurrentSeason = $_REQUEST['season'];
+		$sql = "SELECT * FROM `seasonids` WHERE `id` = '" . mysqli_real_escape_string($link, $_REQUEST['season']) . "'";
+	}
+	else
+	{
+		$sql = "SELECT * FROM `seasonids` WHERE `Current` = '1'";
+	}
+	$result = $link->query($sql);
+	if($row = $result->fetch_assoc())
+	{
+		$CurrentSeason = $row['id'];
+		$SeasonName = $row['SeasonName'];
+	}
+	
+	$resultsArray = Array();
 ?>
                        <div class="header">
-						<h3> Season: Test</h3>
+						<h3> Season: <?php echo $SeasonName; ?></h3>
                         </div>
 			<table class="table table-striped">
 	<tr>
@@ -38,22 +57,6 @@ require_once("header.php");
   </tr>
 
 <?php
-	$CurrentSeason = 1;
-	if(!isset($_REQUEST['season']))
-	{
-		$sql = "SELECT * FROM `seasonids` WHERE `Current` = '1'";
-		$result = $link->query($sql);
-		if($row = $result->fetch_assoc())
-		{
-			$CurrentSeason = $row['id'];
-		}
-	}
-	else
-	{
-		$CurrentSeason = $_REQUEST['season'];
-	}
-	
-	$resultsArray = Array();
 	
 	
 
@@ -131,6 +134,8 @@ require_once("header.php");
 	
   foreach ($resultsArray as $Bot)
   {
+	  if($Bot->matches > 0)
+	  {
 	  echo "
   <tr>
     <td><a href=\"botmatches.php?id=" . $Bot->botid . "\">" . $Bot->botname . "</a></td>
@@ -143,6 +148,7 @@ require_once("header.php");
                                 <span>View Matches</span>
                             </button></td>
   </tr>";
+	  }
   }
 
    ?>

@@ -45,7 +45,6 @@ require_once("header.php");
 	if(isset($_REQUEST['submit']) && isset($_REQUEST['BotName']))
 	{
 		$sql = "SELECT `id` FROM `members` WHERE `username` = '" . mysqli_real_escape_string($link, $_SESSION['username']) . "'";
-		echo $sql;
 		$result = $link->query($sql);
 		if($row = $result->fetch_array(MYSQLI_ASSOC))
 		{
@@ -69,10 +68,8 @@ require_once("header.php");
 			}
 			$sql = "INSERT INTO `participants` (`Name`, `Author`, `Race`) VALUES ('" . mysqli_real_escape_string($link, $_REQUEST['BotName']) . "', '" . $row['id'] . "', '" . GetRaceId($_REQUEST['Race']) . "')";
 			$result = $link->query($sql);
-			echo $sql;
 			$BotID = $link->insert_id;
 			$sql = "INSERT INTO `botrequests` (`id`, `FileLoc`, `DownloadLink`, `Comments`) VALUES ('" . $BotID . "', '" . $location . "', '" . mysqli_real_escape_string($link, $_REQUEST['Download']) . "','" . mysqli_real_escape_string($link, $_REQUEST['Comments']) . "')";
-			echo $sql;
 			$result = $link->query($sql);
 			
 

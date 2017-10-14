@@ -29,6 +29,7 @@ require_once("header.php");
 		`results`.`Winner` AS Winner,
 		`results`.`Map` AS Map,
 		`results`.`ReplayFile` AS ReplayFile,
+		`results`.`Crash` AS Crash,
 		`results`.`Date` AS MatchDate
 	FROM `participants` AS `participant1`, 
 		`participants` AS `participant2`, 
@@ -88,6 +89,10 @@ require_once("header.php");
 		if($row['Winner'] == $_REQUEST['id'])
 		{
 			echo "Win";
+		}
+		else if($row['Crash'] == $_REQUEST['id'])
+		{
+			echo "Crash";
 		}
 		else
 		{
