@@ -38,7 +38,7 @@ require_once("header.php");
 		$CurrentSeason = $row['id'];
 		$SeasonName = $row['SeasonName'];
 	}
-	
+
 	$resultsArray = Array();
 ?>
                        <div class="header">
@@ -53,14 +53,11 @@ require_once("header.php");
     <th>Wins</th>
     <th>Win Pct</th>
     <th></th>
-	
+
   </tr>
 
 <?php
-	
-	
-
-	$sql = "SELECT `participants`.`Name` AS Name, 
+	$sql = "SELECT `participants`.`Name` AS Name,
 			`participants`.`ID` AS ID,
 			`participants`.`Race` AS Race,
 			`members`.`username` AS username,
@@ -87,7 +84,7 @@ require_once("header.php");
 		switch($row['Race'])
 		{
 			case 0:
-			
+
 				$Nextbot->race = "Terran";
 				break;
 			case 1:
@@ -98,7 +95,7 @@ require_once("header.php");
 				break;
 			default:
 				die("Unknown race" . $row['Race']);
-		
+
 		}
 		$sql = "SELECT COUNT(*) AS 'Matches' FROM `results` WHERE SeasonId = '" . $CurrentSeason . "' AND (Bot1 = '" . $row['ID'] . "' OR Bot2 = '" . $row['ID'] . "')" ;
 		$participantResult  = $link->query($sql);
@@ -131,7 +128,7 @@ require_once("header.php");
 		$resultsArray[] = $Nextbot;
 	}
 	usort($resultsArray, "cmp");
-	
+
   foreach ($resultsArray as $Bot)
   {
 	  if($Bot->matches > 0)
