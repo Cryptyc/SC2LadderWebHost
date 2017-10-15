@@ -50,12 +50,12 @@ require_once("header.php");
 ?>
 			<table id="MatchHistoryTable" class="table table-striped" style="width: auto;">
 	<tr>
-		<th onclick=bubbleSortTable("MatchHistoryTable", 0)>Time</th>
-		<th onclick=bubbleSortTable("MatchHistoryTable", 1)>Opponent Name</th>
-		<th onclick=bubbleSortTable("MatchHistoryTable", 2)>Race</th>
-		<th onclick=bubbleSortTable("MatchHistoryTable", 3)>Map</th>
-		<th onclick=bubbleSortTable("MatchHistoryTable", 4)>Result</th>
-		<th onclick=bubbleSortTable("MatchHistoryTable", 5)>Replay</th>
+		<th onclick="bubbleSortTable('MatchHistoryTable', 0)">Time</th>
+		<th onclick="bubbleSortTable('MatchHistoryTable', 1)">Opponent Name</th>
+		<th onclick="bubbleSortTable('MatchHistoryTable', 2)">Race</th>
+		<th onclick="bubbleSortTable('MatchHistoryTable', 3)">Map</th>
+		<th onclick="bubbleSortTable('MatchHistoryTable', 4)">Result</th>
+		<th onclick="bubbleSortTable('MatchHistoryTable', 5)">Replay</th>
 	</tr>
 <?php
 
