@@ -18,6 +18,12 @@ The deepmind python library: <a style="color:#d99a30" href="https://github.com/d
 
 A good place to go to start creating SC2 bots is the Command Center framework available at <a style="color:#d99a30" href="https://github.com/davechurchill/commandcenter" >https://github.com/davechurchill/commandcenter</a>
 
+<div class="header">
+<h3>C++ Api Documentation</h3>
+</div>
+The c++ api has documentation as part of the github repository. Hosted online for your convenience. <a style="color:#d99a30" href="cppapi/index.html" >Documentation hosted here.</a>
+
+
 
 <?php
 require_once("footer.php");
