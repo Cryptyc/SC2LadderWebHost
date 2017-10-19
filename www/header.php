@@ -55,10 +55,10 @@
         <title>Starcraft 2 AI Ladder</title>
 
          <!-- Bootstrap CSS CDN -->
-        <link rel="stylesheet" href="bootstrap.min.css">
+        <link rel="stylesheet" href="bootstrap.min.css" />
         <!-- Our Custom CSS -->
-        <link rel="stylesheet" href="style.css">
-        <script src="js/common.js">
+        <link rel="stylesheet" href="style.css" />
+        <script src="js/common.js" ></script>
     </head>
     <body>
         <div class="wrapper">
