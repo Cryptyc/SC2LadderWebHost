@@ -59,14 +59,11 @@ require_once("header.php");
 				}
 				$location .= "/" . $file_name;
 				move_uploaded_file($_FILES["FileUpload"]["tmp_name"], $location);
-				echo "Uploaded to " . $location;
 			}
 			else
 			{
-				var_dump($_FILES);
-				echo "file upload not found";
 			}
-			$sql = "INSERT INTO `participants` (`Name`, `Author`, `Race`) VALUES ('" . mysqli_real_escape_string($link, $_REQUEST['BotName']) . "', '" . $row['id'] . "', '" . GetRaceId($_REQUEST['Race']) . "')";
+			$sql = "INSERT INTO `participants` (`Name`, `Author`, `Race`, `EloFormat`) VALUES ('" . mysqli_real_escape_string($link, $_REQUEST['BotName']) . "', '" . $row['id'] . "', '" . GetRaceId($_REQUEST['Race']) . "', '1')";
 			$result = $link->query($sql);
 			$BotID = $link->insert_id;
 			$sql = "INSERT INTO `botrequests` (`id`, `FileLoc`, `DownloadLink`, `Comments`) VALUES ('" . $BotID . "', '" . $location . "', '" . mysqli_real_escape_string($link, $_REQUEST['Download']) . "','" . mysqli_real_escape_string($link, $_REQUEST['Comments']) . "')";

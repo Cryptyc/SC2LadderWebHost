@@ -11,14 +11,14 @@ require_once("header.php");
 		public $matches;
 		public $wins;
 		public $crashes;
-		public $winpct;
+		public $ELO;
 	}
 	function cmp($a, $b)
 	{
-		if ($a->winpct == $b->winpct) {
+		if ($a->ELO == $b->ELO) {
 			return 0;
 		}
-		return ($a->winpct < $b->winpct) ? 1 : -1;
+		return ($a->ELO < $b->ELO) ? 1 : -1;
 	}
 
 
@@ -41,9 +41,7 @@ require_once("header.php");
 
 	$resultsArray = Array();
 ?>
-                       <div class="header">
-						<h3> Season: <?php echo $SeasonName; ?></h3>
-                        </div>
+
 			<table class="table table-striped">
 	<tr>
     <th>BotName</th>
@@ -51,7 +49,16 @@ require_once("header.php");
     <th>Race</th>
     <th>Matches</th>
     <th>Wins</th>
-    <th>Win Pct</th>
+<?php
+if ($CurrentSeason < 5)
+{
+	echo "<th>WinPct</th>";
+}
+else 
+{
+    echo "<th>ELO</th>";
+}
+?>
     <th></th>
 
   </tr>
@@ -60,13 +67,12 @@ require_once("header.php");
 	$sql = "SELECT `participants`.`Name` AS Name,
 			`participants`.`ID` AS ID,
 			`participants`.`Race` AS Race,
+			`participants`.`CurrentELO` AS ELO,
 			`members`.`username` AS username,
 			`members`.`Alias` AS Alias
 			FROM `participants`, `members`
 			WHERE `participants`.`Author` = `members`.`id`
-			AND `participants`.`Verified` = '1'
-			AND `participants`.`Deactivated` = '0'
-			AND `participants`.`Deleted` = '0'";
+			AND `participants`.`Verified` = '1'";
 	$result = $link->query($sql);
 	while($row = $result->fetch_array(MYSQLI_ASSOC))
 	{
@@ -117,13 +123,27 @@ require_once("header.php");
 		{
 			$Nextbot->wins = 0;
 		}
-		if($Nextbot->matches == 0 || $Nextbot->wins == 0)
+		if($CurrentSeason < 5)
 		{
-			$Nextbot->winpct = 0;
+			if($Nextbot->matches == 0 || $Nextbot->wins == 0)
+			{
+				$Nextbot->ELO = 0;
+			}
+			else
+			{
+				$Nextbot->ELO = ( $Nextbot->wins / $Nextbot->matches) * 100;
+			}
 		}
 		else
 		{
-			$Nextbot->winpct = ( $Nextbot->wins / $Nextbot->matches) * 100;
+			if($row['ELO'] == 0)
+			{
+				$Nextbot->ELO = 1200;
+			}
+			else
+			{
+				$Nextbot->ELO = $row['ELO'];
+			}
 		}
 		$resultsArray[] = $Nextbot;
 	}
@@ -140,7 +160,7 @@ require_once("header.php");
     <td>" . $Bot->race . "</td>
     <td>" . $Bot->matches . "</td>
     <td>" . $Bot->wins . "</td>
-    <td>" . number_format((float)$Bot->winpct, 2, '.', '') . "</td>
+    <td>" . $Bot->ELO . "</td>
     <td> <button type=\"button\" id=\"Details\" class=\"btn btn-info navbar-btn\" onclick=\"window.location.href='botmatches.php?id=" . $Bot->botid . "&season=" . $CurrentSeason . "'\">
                                 <span>View Matches</span>
                             </button></td>

@@ -27,6 +27,9 @@ require_once("header.php");
 		`participant2`.`Name` AS P2Name,
 		`participant2`.`Race` AS P2Race,
 		`results`.`Winner` AS Winner,
+		`results`.`Result` AS Result,
+		`results`.`Bot1Change` AS Bot1Change,
+		`results`.`Bot2Change` AS Bot2Change,
 		`results`.`Map` AS Map,
 		`results`.`ReplayFile` AS ReplayFile,
 		`results`.`Crash` AS Crash,
@@ -55,7 +58,13 @@ require_once("header.php");
 		<th onclick="bubbleSortTable('MatchHistoryTable', 2)">Race</th>
 		<th onclick="bubbleSortTable('MatchHistoryTable', 3)">Map</th>
 		<th onclick="bubbleSortTable('MatchHistoryTable', 4)">Result</th>
-		<th onclick="bubbleSortTable('MatchHistoryTable', 5)">Replay</th>
+<?php
+if($_REQUEST['season'] > 4)
+{
+		echo "<th onclick=\"bubbleSortTable('MatchHistoryTable', 5)\">ELO Change</th>";
+}
+?>
+		<th onclick="bubbleSortTable('MatchHistoryTable', 6)">Replay</th>
 	</tr>
 <?php
 
@@ -90,6 +99,14 @@ require_once("header.php");
 		{
 			echo "Win";
 		}
+		else if ($row['Winner'] < 1)
+		{
+			echo $row['Result'];
+		}
+		else if($row['Result'] == "Player1Crash" || $row['Result'] == "Player2Crash")
+		{
+			echo "Crash";
+		}
 		else if($row['Crash'] == $_REQUEST['id'])
 		{
 			echo "Crash";
@@ -99,6 +116,19 @@ require_once("header.php");
 			echo "Loss";
 		}
 		echo "</td>";
+		if($_REQUEST['season'] > 4)
+		{
+			echo "<td>";
+			if($row['P1ID'] == $_REQUEST['id'])
+			{
+				echo $row['Bot1Change'];
+			}
+			else 
+			{
+				echo $row['Bot2Change'];
+			}
+			echo "</td>";
+		}
 		echo "<td>";
 		if($row['ReplayFile'] == "")
 		{
