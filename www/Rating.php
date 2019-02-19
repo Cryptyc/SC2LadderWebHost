@@ -34,6 +34,9 @@ class Rating
 
     protected $_newRatingA;
     protected $_newRatingB;
+	
+	protected $_kfactA;
+	protected $_kfactB;
 
     /**
      * Constructor function which does all the maths and stores the results ready
@@ -44,9 +47,9 @@ class Rating
      * @param int $scoreA Score of A
      * @param int $scoreB Score of B
      */
-    public function  __construct($ratingA,$ratingB,$scoreA,$scoreB)
+    public function  __construct($ratingA,$ratingB,$scoreA,$scoreB, $KfacA, $KfacB)
     {
-        $this->setNewSettings($ratingA, $ratingB, $scoreA, $scoreB);
+        $this->setNewSettings($ratingA, $ratingB, $scoreA, $scoreB, $KfacA, $KfacB);
     }
 
     /**
@@ -58,18 +61,20 @@ class Rating
      * @param int $scoreB Score of B
      * @return self
      */
-    public function setNewSettings($ratingA,$ratingB,$scoreA,$scoreB)
+    public function setNewSettings($ratingA,$ratingB,$scoreA,$scoreB, $KfacA, $KfacB)
     {
         $this -> _ratingA = $ratingA;
         $this -> _ratingB = $ratingB;
         $this -> _scoreA = $scoreA;
         $this -> _scoreB = $scoreB;
+        $this -> _kfactA = $KfacA;
+        $this -> _kfactB = $KfacB;
 
         $expectedScores = $this -> _getExpectedScores($this -> _ratingA,$this -> _ratingB);
         $this -> _expectedA = $expectedScores['a'];
         $this -> _expectedB = $expectedScores['b'];
 
-        $newRatings = $this ->_getNewRatings($this -> _ratingA, $this -> _ratingB, $this -> _expectedA, $this -> _expectedB, $this -> _scoreA, $this -> _scoreB);
+        $newRatings = $this ->_getNewRatings($this -> _ratingA, $this -> _ratingB, $this -> _expectedA, $this -> _expectedB, $this -> _scoreA, $this -> _scoreB, $this -> _kfactA, $this -> _kfactB);
         $this -> _newRatingA = $newRatings['a'];
         $this -> _newRatingB = $newRatings['b'];
 
@@ -116,10 +121,10 @@ class Rating
      * @param int $scoreB The score of Player B
      * @return array
      */
-    protected function _getNewRatings($ratingA,$ratingB,$expectedA,$expectedB,$scoreA,$scoreB)
+    protected function _getNewRatings($ratingA,$ratingB,$expectedA,$expectedB,$scoreA,$scoreB, $KfacA, $KfacB)
     {
-        $newRatingA = $ratingA + ( self::KFACTOR * ( $scoreA - $expectedA ) );
-        $newRatingB = $ratingB + ( self::KFACTOR * ( $scoreB - $expectedB ) );
+        $newRatingA = $ratingA + ( $KfacA * ( $scoreA - $expectedA ) );
+        $newRatingB = $ratingB + ( $KfacB * ( $scoreB - $expectedB ) );
 
         return array (
             'a' => $newRatingA,

@@ -33,7 +33,10 @@ require_once("header.php");
 		`results`.`Map` AS Map,
 		`results`.`ReplayFile` AS ReplayFile,
 		`results`.`Crash` AS Crash,
-		`results`.`Date` AS MatchDate
+		`results`.`Date` AS MatchDate,
+		`results`.`Bot1AvgFrame` AS Bot1AvgFrame,
+		`results`.`Bot2AvgFrame` AS Bot2AvgFrame,
+		`results`.`Frames` AS Frames
 	FROM `participants` AS `participant1`,
 		`participants` AS `participant2`,
 		`results`
@@ -65,8 +68,14 @@ if($_REQUEST['season'] > 4)
 }
 ?>
 		<th onclick="bubbleSortTable('MatchHistoryTable', 6)">Replay</th>
-	</tr>
 <?php
+if($_REQUEST['season'] > 5)
+{
+		echo "<th onclick=\"bubbleSortTable('MatchHistoryTable', 7)\">Game Time</th>";
+		echo "<th onclick=\"bubbleSortTable('MatchHistoryTable', 7)\">Avg Frame</th>";
+}
+	echo "</tr>";
+
 
 	while($row = $result->fetch_assoc())
 	{
@@ -142,6 +151,24 @@ if($_REQUEST['season'] > 4)
 
 //			echo "<a href=\"" . $row['ReplayFile'] . "\">Replay</a>";
 		}
+		echo "</td>
+			<td>";
+		if($row["Frames"] > 0)
+		{
+			$seconds = $row["Frames"] / 22.4;
+			echo gmdate("H:i:s", $seconds);
+		}
+		echo "</td>
+			<td>";
+		if($row['P1ID'] == $_REQUEST['id'] && $row["Bot1AvgFrame"] > 0)
+		{
+			echo $row["Bot1AvgFrame"];
+		}
+		else if ($row['P2ID'] == $_REQUEST['id'] && $row["Bot2AvgFrame"] > 0)
+		{
+			echo $row["Bot2AvgFrame"];
+		}
+		
 		echo "</td></tr>";
 	}
 	echo "</table>";

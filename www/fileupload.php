@@ -1,6 +1,12 @@
 <?php
+
+const KFACTORNORMAL = 10;
+const KFACTORLESS100 = 20;
+const KFACTORLESS10 = 30;
+
+
 require_once('Rating.php');
-$replay_dir = 'replays';
+$replay_dir = 'replaysS6';
 require_once("dbconf.php");
 function UpdateSeason($BotId, $link)
 {
@@ -42,6 +48,26 @@ function UpdateSeason($BotId, $link)
 		$link->query($sql);
 	}
 }
+function GetKFactor($BotId, $season, $link)
+{
+	$sql = "SELECT COUNT(*) AS 'Matches' FROM `results` WHERE `SeasonId` = " . $season . " AND (Bot1 = '" . $BotId . "' OR Bot2 = '" . $BotId . "')" ;
+	$participantResult  = $link->query($sql);
+	if($participantRow = $participantResult->fetch_array(MYSQLI_ASSOC))
+	{
+		if($participantRow['Matches'] < 10)
+		{
+			return KFACTORLESS10;
+		}
+		else if($participantRow['Matches'] < 50)
+		{
+			return KFACTORLESS100;
+		}
+		else
+		{
+			return KFACTORNORMAL;
+		}
+	}
+}
 
 header('Content-Type: text/html; charset=utf-8');
 echo "<html> Welcome to bot uploader";
@@ -54,15 +80,27 @@ if($link->connect_error){
     die("ERROR: Could not connect. " . mysqli_connect_error());
 }
  
+ $sql = "SELECT * FROM `members` WHERE `username` = '" . mysqli_real_escape_string($link, $_REQUEST["username"]) . "'";
+$usersResult = $link->query($sql);
+if(!$usersrow = $usersResult->fetch_array(MYSQLI_ASSOC))
+{
+	die( "User no verified for requesting matches");
+}
+
+if(!password_verify($_REQUEST["Password"], $usersrow["password"]))
+{
+	die("User no verified for requesting matches " . $_REQUEST["Password"] . " " . $usersrow["password"]);
+}
+
 // Attempt insert query execution
 
 	if(!isset($_REQUEST))
 	{
-	    throw new RuntimeException('Invalid parameters.');
+	    die('Invalid parameters.');
 	}
 	$BOT1ID = 0;
 	$Bot2ID = 0;
-	$sql = "SELECT * FROM `participants` WHERE `Name` = '" . mysqli_real_escape_string($link, $_REQUEST['Bot1Name']) . "' AND Race = '" . mysqli_real_escape_string($link, $_REQUEST['Bot1Race']) . "'";
+	$sql = "SELECT * FROM `participants` WHERE `Name` = '" . mysqli_real_escape_string($link, $_REQUEST['Bot1Name']) . "'";// AND Race = '" . mysqli_real_escape_string($link, $_REQUEST['Bot1Race']) . "'";
 	echo $sql;
 	echo "\n<br>\n";
 	$result = $link->query($sql);
@@ -80,14 +118,9 @@ if($link->connect_error){
 	}
 	else
 	{
-		$sql = "INSERT INTO `participants` (`Name`, `Race`, `EloFormat`) VALUES ('" . mysqli_real_escape_string($link, $_REQUEST['Bot1Name']) . "', '" . mysqli_real_escape_string($link, $_REQUEST['Bot1Race']) . "', '1')";
-		$result = $link->query($sql);
-		$BOT1ID = $link->insert_id;
-		echo $sql;
-		echo "\n<br>\n";
-		$Bot1ELO = 1200;
+		die("Unable to find Bot2: Name: " . $_REQUEST['Bot2Name'] . " Race: " . $_REQUEST['Bot2Race']);
 	}
-	$sql = "SELECT * FROM `participants` WHERE `Name` = '" . mysqli_real_escape_string($link, $_REQUEST['Bot2Name']) . "' AND Race = '" . mysqli_real_escape_string($link, $_REQUEST['Bot2Race']) . "'";
+	$sql = "SELECT * FROM `participants` WHERE `Name` = '" . mysqli_real_escape_string($link, $_REQUEST['Bot2Name']) . "'"; // AND Race = '" . mysqli_real_escape_string($link, $_REQUEST['Bot2Race']) . "'";
 	$result = $link->query($sql);
 	if($result->num_rows > 0)
 	{
@@ -103,22 +136,17 @@ if($link->connect_error){
 	}
 	else
 	{
-		$sql = "INSERT INTO `participants` (`Name`, `Race`, `EloFormat`) VALUES ('" . mysqli_real_escape_string($link, $_REQUEST['Bot2Name']) . "', '" . mysqli_real_escape_string($link, $_REQUEST['Bot2Race']) . "', '1')";
-		echo $sql;
-		echo "\n<br>\n";
-		$result = $link->query($sql);
-		$Bot2ID = $link->insert_id;
-		$Bot2ELO = 1200;
+		die("Unable to find Bot2: Name: " . $_REQUEST['Bot2Name'] . " Race: " . $_REQUEST['Bot2Race']);
 	}
 	if($_REQUEST['Result'] == "Player1Crash" ||  $_REQUEST['Result'] == "Player2Win")
 	{
 		echo "Player 2 Win";
-		$Winner = 1;
+		$Winner = 2;
 	}
 	else if ($_REQUEST['Result'] == "Player2Crash" ||  $_REQUEST['Result'] == "Player1Win")
 	{
 		echo "Player 1 Win";
-		$Winner = 2;
+		$Winner = 1;
 	}
 	else if ($_REQUEST['Result'] == "Tie" ||  $_REQUEST['Result'] == "Timeout")
 	{
@@ -150,7 +178,20 @@ if($link->connect_error){
 	}
 	if($Winner >= 0)
 	{
-		$rating = new Rating($Bot1ELO, $Bot2ELO, $Rating1, $Rating2);
+		$Bot1Kfact = 0;
+		$Bot2Kfact = 0;
+		$sql = "SELECT * FROM `seasonids` WHERE `Current` = '1'";
+		$result = $link->query($sql);
+		if($row = $result->fetch_assoc())
+		{
+			$CurrentSeason = $row['id'];
+			$Bot1Kfact = GetKFactor($BOT1ID, $CurrentSeason, $link);
+			$Bot2Kfact = GetKFactor($Bot2ID, $CurrentSeason, $link);
+			echo "Bot1 K " . $Bot1Kfact . " Bot2 K " . $Bot2Kfact;
+		}
+
+
+		$rating = new Rating($Bot1ELO, $Bot2ELO, $Rating1, $Rating2, $Bot1Kfact, $Bot2Kfact);
 		$results = $rating->getNewRatings();
 		$Bot1Change = $results['a'] - $Bot1ELO;
 		$Bot2Change = $results['b'] - $Bot2ELO;
@@ -168,7 +209,7 @@ if($link->connect_error){
 		$Bot2Change = 0;
 	}
 
-	$sql = "INSERT INTO `results` (`Bot1`, `Bot2`, `Map`, `Date`,`Winner`, `Result`, `Bot1Change`, `Bot2Change` ) VALUES ('" . $BOT1ID. "', '" . $Bot2ID . "', '" . mysqli_real_escape_string($link, $_REQUEST['Map']) . "', NOW(), '" . $Winner . "',  '" . mysqli_real_escape_string($link, $_REQUEST['Result']) . "','" . $Bot1Change . "','" . $Bot2Change . "')";
+	$sql = "INSERT INTO `results` (`Bot1`, `Bot2`, `Map`, `Date`,`Winner`, `Result`, `SeasonId`, `Bot1Change`, `Bot2Change`,`Bot1AvgFrame`,`Bot2AvgFrame`, `Frames` ) VALUES ('" . $BOT1ID. "', '" . $Bot2ID . "', '" . mysqli_real_escape_string($link, $_REQUEST['Map']) . "', NOW(), '" . $Winner . "',  '" . mysqli_real_escape_string($link, $_REQUEST['Result']) . "','5','" . $Bot1Change . "','" . $Bot2Change . "', '" .mysqli_real_escape_string($link, $_REQUEST['Bot1AvgFrame']) ."', '" .mysqli_real_escape_string($link, $_REQUEST['Bot2AvgFrame']) ."','" .mysqli_real_escape_string($link, $_REQUEST['Frames']) ."')";
 			echo $sql;
 		echo "\n<br>\n";
 	$result = $link->query($sql);
@@ -179,11 +220,18 @@ if($link->connect_error){
 		$MatchID = $link->insert_id;
 		if($MatchID > 0)
 		{
-			$replayFile = $MatchID . $_REQUEST['Bot1Name'] . "-v-" . $_REQUEST['Bot2Name'] . "-" . $_REQUEST['Map'] . ".Sc2Replay";
+			$full_replay_dir = $replay_dir . "/" . substr($MatchID, 0, 2);
+			if (!file_exists($full_replay_dir)) {
+				mkdir($full_replay_dir, 0755, true);
+			}
+
+			$replayFile = $MatchID . $_REQUEST['Bot1Name'] . "-v-" . $_REQUEST['Bot2Name'] . "-" . $_REQUEST['Map'];
+			$replayFile = preg_replace('/[^A-Za-z0-9]/', "", $replayFile);
+			$replayFile .= ".Sc2Replay";
 			$tmp_name = $_FILES["replayfile"]["tmp_name"];
 			$name = basename($replayFile);
-			move_uploaded_file($tmp_name, $replay_dir . "/" . $name);
-			$sql = "UPDATE `results` SET `ReplayFile`='" . mysqli_real_escape_string($link, $replay_dir . "/" . $name) . "' WHERE `GameID`='" . $MatchID . "'";
+			move_uploaded_file($tmp_name, $full_replay_dir . "/" . $name);
+			$sql = "UPDATE `results` SET `ReplayFile`='" . mysqli_real_escape_string($link, $full_replay_dir . "/" . $name) . "' WHERE `GameID`='" . $MatchID . "'";
 			echo $sql;
 			$result = $link->query($sql);
 		}

@@ -51,6 +51,7 @@ class LoginForm extends DbConn
                     session_start();
 
                     $_SESSION['username'] = $myusername;
+					$_SESSION['Admin'] = $result['Admin'];
 
             } elseif (password_verify($mypassword, $result['password']) && $result['verified'] == '0') {
 

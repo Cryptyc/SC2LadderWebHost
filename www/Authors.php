@@ -6,6 +6,22 @@
 
 	$result = $link->query($sql);
 
+	function patreonlevel($innum)
+	{
+		switch($innum)
+		{
+			case 0:
+				return "<img height=\"20\" width=\"20\" src=\"./images/no-star.png\">";
+			case 1:
+				return "<a href=\"https://www.patreon.com/Starcraft2AI\"><img height=\"30\" width=\"30\" src=\"./images/bronze-star.png\"></a>";
+			case 2:
+				return "<a href=\"https://www.patreon.com/Starcraft2AI\"><img height=\"30\" width=\"30\" src=\"./images/silver-star.png\"></a>";
+			case 3:
+				return "<a href=\"https://www.patreon.com/Starcraft2AI\"><img height=\"30\" width=\"30\" src=\"./images/gold-star.png\"></a>";
+			default:
+				return "";
+		}
+	}
 	?>
 	
     <div class="container">
@@ -42,6 +58,7 @@
 						{
 							echo $row['Alias']; 
 						}
+						echo patreonlevel($row["Patreon"]);
 						?></h3>
                         <p><a <?php echo "href=\"AuthorProfile.php?author=" . $row['id'] . "\""; ?> name="View Profile" id="profile" class="btn btn-lg btn-primary btn-block" type="submit">View Profile</a>
 						</p>

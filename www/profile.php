@@ -23,11 +23,11 @@ $sql = "SELECT * FROM `members` WHERE `username` = '" . mysqli_real_escape_strin
 				$newpw =  password_hash($_REQUEST['Password1'], PASSWORD_DEFAULT);
 				$sql = "UPDATE `members` SET `password` = '" . $newpw . "' WHERE `username` = '" . mysqli_real_escape_string($link,$_SESSION['username']) . "'";
 				$link->query($sql);
-				$pwError = "<div class=\"alert alert-danger alert-dismissable\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>Unable to reset password.  Passwords didn't match or doesn't match strength requirements/div>";
+				$pwError = "<div class=\"alert alert-success alert-dismissable\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>Password successfully changed</div>";
 			}
 			else 
 			{
-				$pwError = "<div class=\"alert alert-danger alert-dismissable\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>Unable to reset password.  Passwords didn't match or doesn't match strength requirements/div>";
+				$pwError = "<div class=\"alert alert-danger alert-dismissable\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>Unable to reset password.  Passwords didn't match or doesn't match strength requirements</div>";
 			}
 		}
 
@@ -174,7 +174,7 @@ $sql = "SELECT * FROM `members` WHERE `username` = '" . mysqli_real_escape_strin
         <i class="fa fa-user">
         </i>
        </div>
-	  <input id="Password2" name="Password2" type="password" value="" class="form-control input-md">";
+	  <input id="Password2" name="Password2" type="password" value="" class="form-control input-md">
 	  
       </div>
   

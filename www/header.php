@@ -55,10 +55,10 @@
         <title>Starcraft 2 AI Ladder</title>
 
          <!-- Bootstrap CSS CDN -->
-        <link rel="stylesheet" href="bootstrap.min.css" />
+        <link rel="stylesheet" href="bootstrap.min.css">
         <!-- Our Custom CSS -->
-        <link rel="stylesheet" href="style.css" />
-        <script src="js/common.js" ></script>
+        <link rel="stylesheet" href="style.css">
+		<link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
     </head>
     <body>
         <div class="wrapper">
@@ -66,7 +66,7 @@
             <nav id="sidebar">
                 <div class="sidebar-header">
 				<a href="./">
-          <img class="Header-logo-img" src="sc2Ladder.gif" alt="Sc2Ladder"></a>
+          <img class="Header-logo-img" src="aUhuT8l.png" alt="Sc2Ladder"></a>
 
                 </div>
 
@@ -75,18 +75,11 @@
                         <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false">Ladder Seasons</a>
                         <ul class="collapse list-unstyled" id="homeSubmenu">
 						<?php
-						$sql = "SELECT * FROM `seasonids`";
+						$sql = "SELECT * FROM `seasonids`ORDER BY `id`";
 						$result = $link->query($sql);
 						while($row = $result->fetch_assoc())
 						{
-							if($row['Current'] == '1')
-							{
-								echo "<li><a href=\"index.php?season=" . $row['id'] . "\">Current</a></li>";
-							}
-							else
-							{
-								echo "<li><a href=\"index.php?season=" . $row['id'] . "\">" . $row['SeasonName'] . "</a></li>";
-							}
+							echo "<li><a href=\"index.php?season=" . $row['id'] . "\">" . $row['SeasonName'] . "</a></li>";
 						}
 						?>
                         </ul>
@@ -95,7 +88,7 @@
                         <a href="Authors.php">Bots and Authors</a>
                     </li>
                     <li>
-                        <a href="Learning.php">Learning</a>
+                        <a href="https://wiki.sc2ai.net">Wiki</a>
                     </li>
                     <li>
                         <a href="FAQ.php">FAQ</a>
@@ -119,6 +112,7 @@
 
                         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                             <ul class="nav navbar-nav navbar-right">
+							<li><a href="https://www.patreon.com/bePatron?u=13937215" data-patreon-widget-type="become-patron-button">Become a Patron!</a><script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script></li>
                                 <li><a href="#"></a></li>
 								<?php
 									if (!isset($_SESSION['username'])) {
@@ -129,7 +123,16 @@
 								}
 								else
 								{
-									?>
+									$sql = "SELECT `id`, `Tournament` FROM `members` WHERE `username` = '" . mysqli_real_escape_string($link, $_SESSION['username']) . "'";
+									$toournresult = $link->query($sql);
+									if($tournrow = $toournresult->fetch_array(MYSQLI_ASSOC))
+									{
+										if($tournrow["Tournament"] == 1)
+										{
+											echo "<li><a href=\"TournamentBots.php\">Tournament Upload</a></li>";
+										}
+									}
+								?>
                                 <li><a href="Bots.php">Bots</a></li>
                                 <li><a href="profile.php">Profile</a></li>
                                 <li><a href="logout.php">Log Out</a></li>

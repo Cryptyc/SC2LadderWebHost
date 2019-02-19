@@ -20,7 +20,23 @@ require_once("header.php");
 		}
 		return ($a->ELO < $b->ELO) ? 1 : -1;
 	}
-
+	
+	function patreonlevel($innum)
+	{
+		switch($innum)
+		{
+			case 0:
+				return "<img height=\"20\" width=\"20\" src=\"./images/no-star.png\">";
+			case 1:
+				return "<a href=\"https://www.patreon.com/Starcraft2AI\"><img height=\"20\" width=\"20\" src=\"./images/bronze-star.png\"></a>";
+			case 2:
+				return "<a href=\"https://www.patreon.com/Starcraft2AI\"><img height=\"20\" width=\"20\" src=\"./images/silver-star.png\"></a>";
+			case 3:
+				return "<a href=\"https://www.patreon.com/Starcraft2AI\"><img height=\"20\" width=\"20\" src=\"./images/gold-star.png\"></a>";
+			default:
+				return "";
+		}
+	}
 
 	$CurrentSeason = 1;
 	if(isset($_REQUEST['season']))
@@ -30,6 +46,7 @@ require_once("header.php");
 	}
 	else
 	{
+		$ShowTournament = 1;
 		$sql = "SELECT * FROM `seasonids` WHERE `Current` = '1'";
 	}
 	$result = $link->query($sql);
@@ -41,9 +58,12 @@ require_once("header.php");
 
 	$resultsArray = Array();
 ?>
-
+<?php
+echo $row['TournamentResults'];
+?>
 			<table class="table table-striped">
 	<tr>
+    <th>Pos</th>
     <th>BotName</th>
     <th>Author</th>
     <th>Race</th>
@@ -69,16 +89,17 @@ else
 			`participants`.`Race` AS Race,
 			`participants`.`CurrentELO` AS ELO,
 			`members`.`username` AS username,
-			`members`.`Alias` AS Alias
+			`members`.`Alias` AS Alias,
+			`members`.`Patreon` AS Patreon
 			FROM `participants`, `members`
-			WHERE `participants`.`Author` = `members`.`id`
-			AND `participants`.`Verified` = '1'";
+			WHERE `participants`.`Author` = `members`.`id`";
 	$result = $link->query($sql);
 	while($row = $result->fetch_array(MYSQLI_ASSOC))
 	{
 		$Nextbot = new BotResult();
 		$Nextbot->botid = $row['ID'];
 		$Nextbot->botname = $row['Name'];
+		$Nextbot->patreon = $row['Patreon'];
 		if($row['Alias'] == "")
 		{
 			$Nextbot->author= $row['username'];
@@ -87,6 +108,7 @@ else
 		{
 			$Nextbot->author= $row['Alias'];
 		}
+		
 		switch($row['Race'])
 		{
 			case 0:
@@ -99,8 +121,13 @@ else
 			case 2:
 				$Nextbot->race = "Protoss";
 				break;
+			case 3:
+				$Nextbot->race = "Random";
+				break;
 			default:
-				die("Unknown race" . $row['Race']);
+				$Nextbot->race = "Unnkown";
+
+//				die("Unknown race" . $row['Race']);
 
 		}
 		$sql = "SELECT COUNT(*) AS 'Matches' FROM `results` WHERE SeasonId = '" . $CurrentSeason . "' AND (Bot1 = '" . $row['ID'] . "' OR Bot2 = '" . $row['ID'] . "')" ;
@@ -131,18 +158,30 @@ else
 			}
 			else
 			{
-				$Nextbot->ELO = ( $Nextbot->wins / $Nextbot->matches) * 100;
+				$Nextbot->ELO = round(( $Nextbot->wins / $Nextbot->matches) * 100, 2);
 			}
 		}
 		else
 		{
-			if($row['ELO'] == 0)
+			if($CurrentSeason < 7)
 			{
-				$Nextbot->ELO = 1200;
+				$sql = "SELECT `ELO` FROM `seasons` WHERE `Season` = '" . $CurrentSeason . "' AND `BotId` = '" . $row['ID'] . "'";
+				$ELOResult = $link->query($sql);
+				if($ELORow = $ELOResult->fetch_array(MYSQLI_ASSOC))
+				{
+					$Nextbot->ELO = $ELORow['ELO'];
+				}				
 			}
 			else
 			{
-				$Nextbot->ELO = $row['ELO'];
+				if($row['ELO'] == 0)
+				{
+					$Nextbot->ELO = 1200;
+				}
+				else
+				{
+					$Nextbot->ELO = $row['ELO'];
+				}
 			}
 		}
 		$resultsArray[] = $Nextbot;
@@ -151,12 +190,14 @@ else
 
   foreach ($resultsArray as $Bot)
   {
+	  $i = 1;
 	  if($Bot->matches > 0)
 	  {
 	  echo "
   <tr>
-    <td><a href=\"botmatches.php?id=" . $Bot->botid . "\">" . $Bot->botname . "</a></td>
-    <td>" . $Bot->author . "</td>
+    <td>" . $i . "</td>
+	<td><a href=\"BotProfile.php?BotId=" . $Bot->botid . "&season=" . $CurrentSeason ."\">" . $Bot->botname . "</a></td>
+    <td>" . $Bot->author . "&nbsp;" . patreonlevel($Bot->patreon) . "</td>
     <td>" . $Bot->race . "</td>
     <td>" . $Bot->matches . "</td>
     <td>" . $Bot->wins . "</td>
@@ -175,7 +216,13 @@ else
   $LastDateResult = $link->query($sql);
   if($LastDateRow = $LastDateResult->fetch_array(MYSQLI_ASSOC))
   {
-	  echo "Last result recieved : " . $LastDateRow['LastDate'] . "<br>";
+	  echo "Last result received : " . $LastDateRow['LastDate'] . " UTC<br>";
+  }
+  $sql = "SELECT Count(GameID) AS results FROM results WHERE date >= now() - INTERVAL 1 DAY";
+  $LastDateResult = $link->query($sql);
+  if($LastDateRow = $LastDateResult->fetch_array(MYSQLI_ASSOC))
+  {
+	  echo "Results in last 24hours: " . $LastDateRow['results'] . "<br>";
   }
   require_once("footer.php");
   ?>

@@ -2,7 +2,22 @@
 session_start();
 	require_once("header.php");
 
-
+	function patreonlevel($innum)
+	{
+		switch($innum)
+		{
+			case 0:
+				return "<img height=\"20\" width=\"20\" src=\"./images/no-star.png\">";
+			case 1:
+				return "<a href=\"https://www.patreon.com/Starcraft2AI\"><img height=\"30\" width=\"30\" src=\"./images/bronze-star.png\"></a>";
+			case 2:
+				return "<a href=\"https://www.patreon.com/Starcraft2AI\"><img height=\"30\" width=\"30\" src=\"./images/silver-star.png\"></a>";
+			case 3:
+				return "<a href=\"https://www.patreon.com/Starcraft2AI\"><img height=\"30\" width=\"30\" src=\"./images/gold-star.png\"></a>";
+			default:
+				return "";
+		}
+	}
 
 	if(!isset($_REQUEST['author']))
 	{
@@ -20,7 +35,19 @@ session_start();
 <hr>
 <div class="container bootstrap snippet">
     <div class="row">
-  		<div class="col-sm-10"><h1><?php echo $row['Alias']; ?></h1></div>
+  		<div class="col-sm-10"><h1>
+		<?php
+		if($row["Alias"] == "")
+		{
+			echo $row["username"];
+		}
+		else
+		{
+			echo $row['Alias'];
+		}
+		echo " " . patreonlevel($row["Patreon"]); 
+		?>
+		</h1></div>
     	<div class="col-sm-2">
 		<?php
 		if( $row['Avatar'] == "")
@@ -67,6 +94,7 @@ session_start();
                       <th>Race</th>
                       <th>Season</th>
                       <th>Win Pct</th>
+                      <th>ELO</th>
                       <th>Position</th>
                     </tr>
                   </thead>
@@ -75,14 +103,16 @@ session_start();
 			$sql = "SELECT `participants`.`name` AS BotName, 
 			`participants`.`Race` AS BotRace, 
 			`seasonids`.`SeasonName` AS SeasonName, 
+			`seasonids`.`EndDate` AS EndDate, 
 			`seasons`.`Season` AS Season, 
 			`seasons`.`WinPct` AS WinPct, 
+			`seasons`.`ELO` AS ELO, 
 			`seasons`.`Position` AS Position 
 			FROM `participants`, `seasons`, `seasonids` WHERE `seasons`.`Author` = `participants`.`Author` 
 			AND `seasons`.`BotId` = `participants`.`id` 
 			AND `seasons`.`Season` = `seasonids`.`id` 
 			AND `seasons`.`Author` = '" . mysqli_real_escape_string($link, $_REQUEST['author']) . "' 
-			ORDER BY `seasons`.`EndDate` DESC, `seasons`.`Position` ASC";
+			ORDER BY `seasonids`.`EndDate` DESC, `seasons`.`Position` ASC";
 					
 					$botresult = $link->query($sql);
 				while($botrow = $botresult->fetch_assoc())
@@ -92,6 +122,7 @@ session_start();
                       <td>" . GetRace($botrow['BotRace']) . "</td>
                       <td>" . $botrow['SeasonName'] . "</td>
                       <td>" . number_format((float)$botrow['WinPct'], 2, '.', '') . "</td>
+                      <td>" . $botrow['ELO'] . "</td>
                       <td>" . $botrow['Position'] . "</td>
                     </tr>";
 				}
