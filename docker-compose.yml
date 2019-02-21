@@ -13,7 +13,7 @@ services:
   db:
     image: mysql:5.7
     volumes:
-      - mysql_data:/var/lib/mysql
+      - sc2ladderwebhost_mysql_data:/var/lib/mysql
     ports:
       - "3306:3306"
     environment:
@@ -21,4 +21,4 @@ services:
       - MYSQL_DATABASE=database
 
 volumes:
-  mysql_data: {}
+  sc2ladderwebhost_mysql_data: {}
