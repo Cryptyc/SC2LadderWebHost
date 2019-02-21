@@ -3,6 +3,3 @@
 *.iml
 out
 gen
-
-# Data created by the MySql docker container. Mounted locally but no need to commit to the repository
-sqldata
