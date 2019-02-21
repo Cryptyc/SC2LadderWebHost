@@ -20,4 +20,5 @@ docker-compose.yml creates two containers and links them under the same network.
     - Port: 3306 (To change the port mapping change the first port for the mysql container in docker-compose.yml)
     - Username: root
     - Password: root (change in the docker-compose.yml if you want extra security)
+6. Copy the ./www/dbconf-example.php file to ./www/dbconf.php and update any required connection details.
 6. Navigate to [http://localhost:8000](http://localhost:8000) and you should see a working site. Changes are synced in real-time as you update files.

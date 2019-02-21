@@ -1,3 +1,6 @@
+# Don't version control database access details
+./www/dbconf.php
+
 # IntelliJ project files
 .idea
 *.iml
