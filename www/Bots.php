@@ -97,23 +97,31 @@ require_once("header.php");
 				$sql = "UPDATE `participants` SET `Deleted`='0', `Verified` = '0' WHERE `ID` = '" . $BotRow['ID'] . "'";
 				$result = $link->query($sql);
 				$BotID = $BotRow['ID'];
-				$sql = "UPDATE `botrequests` SET `UploadedTime`= NOW(),`FileLoc` ='" . $location . "', `DownloadLink`='" . mysqli_real_escape_string($link, $_REQUEST['Download']) . "', `Comments` = '" . mysqli_real_escape_string($link, $_REQUEST['Comments']) . "' WHERE `id`='" . $BotId . "'";
+				$sql = "UPDATE `botrequests` SET `UploadedTime`= NOW(),`FileLoc` ='" . $location . "', `DownloadLink`='" . mysqli_real_escape_string($link, $_REQUEST['Download']) . "', `Comments` = '" . mysqli_real_escape_string($link, $_REQUEST['Comments']) . "' WHERE `id`='" . $BotID . "'";
 				$result = $link->query($sql);
 
 			}
 			else
 			{
-				$downloadable = 0;
-				if($_REQUEST['Downloadable'])
+				$sql = "SELECT * FROM `participants` WHERE `Name` = '" . mysqli_real_escape_string($link, $_REQUEST['BotName']) . "'";
+				$Botresult = $link->query($sql);
+				if($BotRow = $Botresult->fetch_array(MYSQLI_ASSOC))
 				{
-					$downloadable = 1;
+					$errorText =  "That bot name is already taken";
 				}
-				$sql = "INSERT INTO `participants` (`Name`, `Author`, `Race`, `EloFormat`, `Downloadable`) VALUES ('" . mysqli_real_escape_string($link, $_REQUEST['BotName']) . "', '" . $row['id'] . "', '" . GetRaceId($_REQUEST['Race']) . "', '1', '" . $downloadable . "')";
-				$result = $link->query($sql);
-				$BotID = $link->insert_id;
-				$sql = "INSERT INTO `botrequests` (`id`, `FileLoc`, `DownloadLink`, `Comments`) VALUES ('" . $BotID . "', '" . $location . "', '" . mysqli_real_escape_string($link, $_REQUEST['Download']) . "','" . mysqli_real_escape_string($link, $_REQUEST['Comments']) . "')";
-				$result = $link->query($sql);
-				echo $sql;
+				else
+				{
+					$downloadable = 0;
+					if($_REQUEST['Downloadable'])
+					{
+						$downloadable = 1;
+					}
+					$sql = "INSERT INTO `participants` (`Name`, `Author`, `Race`, `EloFormat`, `Downloadable`) VALUES ('" . mysqli_real_escape_string($link, $_REQUEST['BotName']) . "', '" . $row['id'] . "', '" . GetRaceId($_REQUEST['Race']) . "', '1', '" . $downloadable . "')";
+					$result = $link->query($sql);
+					$BotID = $link->insert_id;
+					$sql = "INSERT INTO `botrequests` (`id`, `FileLoc`, `DownloadLink`, `Comments`) VALUES ('" . $BotID . "', '" . $location . "', '" . mysqli_real_escape_string($link, $_REQUEST['Download']) . "','" . mysqli_real_escape_string($link, $_REQUEST['Comments']) . "')";
+					$result = $link->query($sql);
+				}
 			}
 			
 			if($row['AutoAuth'] == 1 && $BotID > 0)
