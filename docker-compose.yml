@@ -5,15 +5,17 @@ services:
     build:
       context: ./
       dockerfile: php-apache.dockerfile
-    ports:
-      - "8000:80"
     volumes:
       - ./www:/var/www/html
+    ports:
+      - "8000:80"
+    environment: # TODO There are reports that host.docker.internal does not work on Linux. This should be confirmed/debunked.
+      XDEBUG_CONFIG: remote_host=host.docker.internal
 
   db:
     image: mysql:5.7
     volumes:
-      - sc2ladderwebhost_mysql_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
     ports:
       - "3306:3306"
     environment:
@@ -21,4 +23,4 @@ services:
       - MYSQL_DATABASE=database
 
 volumes:
-  sc2ladderwebhost_mysql_data: {}
+  mysql_data: {}
