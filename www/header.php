@@ -85,6 +85,9 @@
                         </ul>
                     </li>
                     <li>
+                        <a href="RecentMatches.php">Recent Matches</a>
+                    </li>
+                    <li>
                         <a href="Authors.php">Bots and Authors</a>
                     </li>
                     <li>
