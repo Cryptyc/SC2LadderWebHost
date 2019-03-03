@@ -12,7 +12,6 @@ $sql = "SELECT DATE_FORMAT(`Date`, '%Y-%m-%d %H:%i:%s') as Date,
        Crash,
        Result,
        ReplayFile,
-       seasonids.SeasonName as Season,
        Bot1Change,
        Bot2Change,
        Bot1AvgFrame,
@@ -21,7 +20,6 @@ $sql = "SELECT DATE_FORMAT(`Date`, '%Y-%m-%d %H:%i:%s') as Date,
 FROM results
 INNER JOIN participants AS participant1 ON participant1.ID = results.Bot1
 INNER JOIN participants AS participant2 ON participant2.ID = results.Bot2
-INNER JOIN seasonids ON seasonids.id = results.SeasonId
 ORDER BY `Date` DESC
 LIMIT 100";
 
@@ -42,7 +40,6 @@ if ($result->num_rows < 1) {
         <th onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Crash</th>
         <th onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Result</th>
         <th onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">ReplayFile</th>
-        <th onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Season</th>
         <th onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Bot1Change</th>
         <th onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Bot2Change</th>
         <th onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Bot1AvgFrame</th>
@@ -63,7 +60,6 @@ if ($result->num_rows < 1) {
                 <span>Replay</span>
             </button>
         </td>
-        <td> <?php echo $row['Season']; ?>  </td>
         <td> <?php echo $row['Bot1Change']; ?>  </td>
         <td> <?php echo $row['Bot2Change']; ?>  </td>
         <td> <?php echo $row['Bot1AvgFrame']; ?>  </td>
