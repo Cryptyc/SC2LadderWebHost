@@ -8,7 +8,7 @@ $sql = "SELECT DATE_FORMAT(`Date`, '%Y-%m-%d %H:%i:%s') as Date,
        participant1.Name as Bot1,
        participant2.Name as Bot2,
        Map,
-       Winner,
+       winner.Name as Winner,
        Crash,
        Result,
        ReplayFile,
@@ -20,6 +20,7 @@ $sql = "SELECT DATE_FORMAT(`Date`, '%Y-%m-%d %H:%i:%s') as Date,
 FROM results
 INNER JOIN participants AS participant1 ON participant1.ID = results.Bot1
 INNER JOIN participants AS participant2 ON participant2.ID = results.Bot2
+LEFT JOIN participants AS winner ON winner.ID = results.Winner
 ORDER BY `Date` DESC
 LIMIT 100";
 
