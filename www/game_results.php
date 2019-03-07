@@ -52,7 +52,8 @@
 		`participants` AS `participant2`,
 		`members` AS `author2`,
 		`results`
-		WHERE `results`.`seasonid`='6'
+		INNER JOIN seasonids on seasonids.id = results.seasonid 
+		WHERE seasonids.Current = 1
 		AND `results`.`Bot1`= `participant1`.`ID`
 		AND `participant1`.`Author` = `author1`.`id`
 		AND `results`.`Bot2` = `participant2`.`ID`
