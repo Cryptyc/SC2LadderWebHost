@@ -39,11 +39,11 @@ session_start();
 		<?php
 		if($row["Alias"] == "")
 		{
-			echo $row["username"];
+			echo htmlspecialchars($row["username"]);
 		}
 		else
 		{
-			echo $row['Alias'];
+			echo htmlspecialchars($row['Alias']);
 		}
 		echo " " . patreonlevel($row["Patreon"]); 
 		?>
@@ -56,7 +56,7 @@ session_start();
 		}
 		else
 		{
-			echo "<img title=\"profile image\" class=\"img-circle img-responsive\" src=\"" . $row['Avatar'] . "\">";
+			echo "<img title=\"profile image\" class=\"img-circle img-responsive\" src=\"" . htmlspecialchars($row['Avatar']) . "\">";
 		}
 		?>
 		</div>
@@ -66,19 +66,19 @@ session_start();
               
           <ul class="list-group">
             <li class="list-group-item text-muted">Profile</li>
-            <li class="list-group-item text-right"><span class="pull-left"><strong>Joined</strong></span> <?php echo $row['Joined']; ?></li>
-            <li class="list-group-item text-right"><span class="pull-left"><strong>Real name</strong></span> <?php echo $row['Name']; ?></li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Joined</strong></span> <?php echo htmlspecialchars($row['Joined']); ?></li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Real name</strong></span> <?php echo htmlspecialchars($row['Name']); ?></li>
             
           </ul> 
                
           <div class="panel panel-default">
             <div class="panel-heading">Website <i class="fa fa-link fa-1x"></i></div>
-            <div class="panel-body"><?php echo "<a href=\"" . $row['Website'] . "\">" . $row['Website'] . "</a>" ?></div>
+            <div class="panel-body"><?php echo "<a href=\"" . htmlspecialchars($row['Website']) . "\">" . htmlspecialchars($row['Website']) . "</a>" ?></div>
           </div>
           
           <div class="panel panel-default">
             <div class="panel-heading">Github <i class="fa fa-link fa-1x"></i></div>
-            <div class="panel-body"><?php echo "<a href=\"" . $row['Github'] . "\">" . $row['Github'] . "</a>" ?></div>
+            <div class="panel-body"><?php echo "<a href=\"" . htmlspecialchars($row['Github']) . "\">" . htmlspecialchars($row['Github']) . "</a>" ?></div>
           </div>
           
         </div><!--/col-3-->

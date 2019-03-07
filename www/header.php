@@ -79,7 +79,7 @@
 						$result = $link->query($sql);
 						while($row = $result->fetch_assoc())
 						{
-							echo "<li><a href=\"index.php?season=" . $row['id'] . "\">" . $row['SeasonName'] . "</a></li>";
+							echo "<li><a href=\"index.php?season=" . htmlspecialchars($row['id']) . "\">" . htmlspecialchars($row['SeasonName']) . "</a></li>";
 						}
 						?>
                         </ul>

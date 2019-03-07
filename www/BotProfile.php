@@ -86,7 +86,7 @@ session_start();
 <hr>
 <div class="container bootstrap snippet">
     <div class="row">
-  		<div class="col-sm-10"><h1><?php echo $row['BotName']; ?></h1></div>
+  		<div class="col-sm-10"><h1><?php echo htmlspecialchars($row['BotName']); ?></h1></div>
     	<div class="col-sm-2">
 		<?php
 		if( $row['Avatar'] == "")
@@ -105,15 +105,15 @@ session_start();
               
           <ul class="list-group">
             <li class="list-group-item text-muted">Profile</li>
-            <li class="list-group-item text-right"><span class="pull-left"><strong>Games</strong></span> <?php echo $BotMatches; ?></li>
-            <li class="list-group-item text-right"><span class="pull-left"><strong>Wins</strong></span> <?php echo $BotWins; ?></li>
-            <li class="list-group-item text-right"><span class="pull-left"><strong>Current ELO</strong></span> <?php echo $row['ELO']; ?></li>
-            <li class="list-group-item text-right"><span class="pull-left"><strong>Last Update</strong></span> <?php echo $row['UploadedTime']; ?></li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Games</strong></span> <?php echo htmlspecialchars($BotMatches); ?></li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Wins</strong></span> <?php echo htmlspecialchars($BotWins); ?></li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Current ELO</strong></span> <?php echo htmlspecialchars($row['ELO']); ?></li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Last Update</strong></span> <?php echo htmlspecialchars($row['UploadedTime']); ?></li>
 			<?php
 			if($row['Downloadable'] == 1)
 			{
 			?>
-				<li class="list-group-item text-right"><span class="pull-left"><strong>Download</strong></span><?php echo "<a href=\"BotDownload.php?BotName=" . $row['BotName'] . "\">Available</a>"; ?></li>
+				<li class="list-group-item text-right"><span class="pull-left"><strong>Download</strong></span><?php echo "<a href=\"" . htmlspecialchars($row['FileLoc']) . "\">Available</a>"; ?></li>
 			<?php
 			}
 			else
@@ -125,7 +125,7 @@ session_start();
 			if(($_SESSION['username'] == $row['username'] || $_SESSION['Admin'] == 1) && $row["DataDirectory"] != "" && file_exists($_SERVER["DOCUMENT_ROOT"] . "/" . $row["DataDirectory"]))
 			{
 			?>
-				<li class="list-group-item text-right"><span class="pull-left"><strong>Download Data</strong></span><?php echo "<a href=\"DataDownload.php?BotName=" . $row['BotName'] . "\">Available</a>"; ?></li>
+				<li class="list-group-item text-right"><span class="pull-left"><strong>Download Data</strong></span><?php echo "<a href=\"DataDownload.php?BotName=" . htmlspecialchars($row['BotName']) . "\">Available</a>"; ?></li>
 			<?php
 			}
 
@@ -135,12 +135,12 @@ session_start();
                
           <div class="panel panel-default">
             <div class="panel-heading">Website <i class="fa fa-link fa-1x"></i></div>
-            <div class="panel-body"><?php echo "<a href=\"" . $row['Website'] . "\">" . $row['Website'] . "</a>" ?></div>
+            <div class="panel-body"><?php echo "<a href=\"" . htmlspecialchars($row['Website']) . "\">" . htmlspecialchars($row['Website']) . "</a>" ?></div>
           </div>
           
           <div class="panel panel-default">
             <div class="panel-heading">Github <i class="fa fa-link fa-1x"></i></div>
-            <div class="panel-body"><?php echo "<a href=\"" . $row['Github'] . "\">" . $row['Github'] . "</a>" ?></div>
+            <div class="panel-body"><?php echo "<a href=\"" . htmlspecialchars($row['Github']) . "\">" . htmlspecialchars($row['Github']) . "</a>" ?></div>
           </div>
           
         </div><!--/col-3-->

@@ -50,7 +50,7 @@ require_once("header.php")
 		}
 		if($currentFrameNum > 0 && $currentNum > 0)
 		{
-			echo "<tr><td>" . $row["Name"] . "</td><td>";
+			echo "<tr><td>" . htmlspecialchars($row["Name"]) . "</td><td>";
 			if($currentFrameNum > 0)
 			{
 				$avgFrames = $currentFrames / $currentFrameNum;

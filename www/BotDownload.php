@@ -19,12 +19,12 @@ if($botRow = $result->fetch_array(MYSQLI_ASSOC))
 	$attachment_location = $_SERVER["DOCUMENT_ROOT"] . "/" . $botRow["FileLoc"];
 	if (file_exists($attachment_location) && $botRow["Downloadable"] == 1) {
 
-		header($_SERVER["SERVER_PROTOCOL"] . " 200 OK");
+		header("HTTP/1.1 200 OK");
 		header("Cache-Control: public"); // needed for internet explorer
 		header("Content-Type: application/zip");
 		header("Content-Transfer-Encoding: Binary");
 		header("Content-Length:".filesize($attachment_location));
-		header("Content-Disposition: attachment; filename=" .$_REQUEST['BotName'] . ".zip");
+		header("Content-Disposition: attachment; filename=" .htmlspecialchars($_REQUEST['BotName']) . ".zip");
 		readfile($attachment_location);
 	
 		die();        

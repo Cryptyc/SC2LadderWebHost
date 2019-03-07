@@ -44,7 +44,7 @@
 		}
 		else
 		{
-			echo "<img class=\"img-thumbnail\" src=\"" . $row['Avatar'] . "\">";
+			echo "<img class=\"img-thumbnail\" src=\"" . htmlspecialchars($row['Avatar']) . "\">";
 		}
 		?>
                     <div class="media-body text-center">
@@ -52,15 +52,15 @@
                         <h3><?php 
 						if($row['Alias'] == "")
 						{
-							echo $row['username'];
+							echo htmlspecialchars($row['username']);
 						}
 						else 
 						{
-							echo $row['Alias']; 
+							echo htmlspecialchars($row['Alias']); 
 						}
 						echo patreonlevel($row["Patreon"]);
 						?></h3>
-                        <p><a <?php echo "href=\"AuthorProfile.php?author=" . $row['id'] . "\""; ?> name="View Profile" id="profile" class="btn btn-lg btn-primary btn-block" type="submit">View Profile</a>
+                        <p><a <?php echo "href=\"AuthorProfile.php?author=" . htmlspecialchars($row['id']) . "\""; ?> name="View Profile" id="profile" class="btn btn-lg btn-primary btn-block" type="submit">View Profile</a>
 						</p>
                     </div>
 				</div>
