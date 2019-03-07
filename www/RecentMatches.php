@@ -51,8 +51,8 @@ if ($result->num_rows < 1) {
     <tr>
         <td> <?php echo htmlspecialchars($row['Date']); ?>  </td>
         <td> <?php echo htmlspecialchars($row['Bot1']); ?>  </td>
-        <td> <?php htmlspecialchars(echo $row['Bot2']); ?>  </td>
-        <td> <?php htmlspecialchars(echo $row['Map']); ?>  </td>
+        <td> <?php echo htmlspecialchars($row['Bot2']); ?>  </td>
+        <td> <?php echo htmlspecialchars($row['Map']); ?>  </td>
         <td> 
 		<?php 
 		if($row['Winner'] == $row['Bot1ID'] )
