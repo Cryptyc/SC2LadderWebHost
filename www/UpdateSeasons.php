@@ -36,7 +36,6 @@ function UpdateSeason($BotId, $link)
 			$winpct = ( $wins / $matches) * 100;
 		}
 		$sql = "UPDATE `seasons` SET `Matches` = '" . $matches . "', `Wins` = '" . $wins . "', `WinPct` = '" . $winpct . "' WHERE `BotId` = '" . $BotId . "' AND `Season` = '" . $CurrentSeason . "'";
-		echo "<br>$sql<br>";
 		$link->query($sql);
 	}
 }

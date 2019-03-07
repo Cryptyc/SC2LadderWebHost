@@ -202,7 +202,7 @@ require_once("header.php");
 		$downloadableText = "Private";
 	}
 	 echo "<tr>
-				<td>" . $row['Name'] . "</td>
+				<td>" . htmlspecialchars($row['Name']) . "</td>
 				<td>" . GetRace($row['Race']) . "</td>
 				<td>";
 	if($row['Verified'] == 0)

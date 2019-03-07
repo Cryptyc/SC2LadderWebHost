@@ -25,7 +25,7 @@ if(!$botRow = $botResult->fetch_array(MYSQLI_ASSOC))
 $attachment_location = $_SERVER["DOCUMENT_ROOT"] . "/" . $botRow["DataDirectory"];
 if (file_exists($attachment_location)) {
 
-	header($_SERVER["SERVER_PROTOCOL"] . " 200 OK");
+	header("HTTP/1.1 200 OK");
 	header("Cache-Control: public"); // needed for internet explorer
 	header("Content-Type: application/zip");
 	header("Content-Transfer-Encoding: Binary");

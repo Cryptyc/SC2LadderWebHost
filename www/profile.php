@@ -106,7 +106,7 @@ $sql = "SELECT * FROM `members` WHERE `username` = '" . mysqli_real_escape_strin
         </i>
        </div>
 	   <?php
-       echo "<input id=\"RealName\" name=\"RealName\" type=\"text\" value=\"" . $row['Name'] . "\" class=\"form-control input-md\">";
+       echo "<input id=\"RealName\" name=\"RealName\" type=\"text\" value=\"" . htmlspecialchars($row['Name']) . "\" class=\"form-control input-md\">";
 	   ?>
       </div>
   
@@ -125,7 +125,7 @@ $sql = "SELECT * FROM `members` WHERE `username` = '" . mysqli_real_escape_strin
         </i>
        </div>
 	   <?php
-       echo "<input id=\"Website\" name=\"Website\" type=\"text\" value=\"" . $row['Website'] . "\" class=\"form-control input-md\">";
+       echo "<input id=\"Website\" name=\"Website\" type=\"text\" value=\"" . htmlspecialchars($row['Website']) . "\" class=\"form-control input-md\">";
 	   ?>
       </div>
     

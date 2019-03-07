@@ -46,12 +46,12 @@ if(isset($_FILES['BotFile']))
 	if(isset($_REQUEST['Data']) && $_REQUEST["Data"] == 1)
 	{
 		$dbField = "DataDirectory";
-		$zip_location = "DataDirs/" . $_REQUEST["BotName"] . ".zip";
+		$zip_location = "DataDirs/" . htmlspecialchars($_REQUEST["BotName"]) . ".zip";
 	}
 	else
 	{
 		$dbField = "WorkingDirectory";
-		$zip_location = "workingdirs/" . $_REQUEST["BotName"] . ".zip";
+		$zip_location = "workingdirs/" . htmlspecialchars($_REQUEST["BotName"]) . ".zip";
 	}
 	$attachment_location = $_SERVER["DOCUMENT_ROOT"] . '/' .  $zip_location;
 	$tmp_name = $_FILES["BotFile"]["tmp_name"];
@@ -59,7 +59,7 @@ if(isset($_FILES['BotFile']))
 	if($checksum != $_REQUEST["Checksum"])
 	{
 		$jsonOut["result"] = false;
-		$jsonOut["error"] = "Checksum not valid: Uploaded: " . $checksum . " original: " . $_REQUEST["Checksum"];
+		$jsonOut["error"] = "Checksum not valid: Uploaded: " . $checksum . " original: " . htmlspecialchars($_REQUEST["Checksum"]);
 		echo json_encode($jsonOut);
 		exit();
 	}

@@ -19,8 +19,8 @@ if(isset($_REQUEST['uid']))
       <form class="form-signup" id="pwrecover" name="pwrecover" method="post" action="pwrecover.php">
         <h2 class="form-signup-heading">Reset Password</h2>
 		<?php
-		echo "<input type=\"hidden\" name=\"userid\" value=\"" . $row['user'] . "\">
-			<input type=\"hidden\" name=\"verifycode\" value=\"" . $_REQUEST['uid'] . "\">";
+		echo "<input type=\"hidden\" name=\"userid\" value=\"" . htmlspecialchars($row['user']) . "\">
+			<input type=\"hidden\" name=\"verifycode\" value=\"" . htmlspecialchars($_REQUEST['uid']) . "\">";
 		?>
         <input name="password1" id="password1" type="password" class="form-control" placeholder="Password">
         <input name="password2" id="password2" type="password" class="form-control" placeholder="Repeat Password">

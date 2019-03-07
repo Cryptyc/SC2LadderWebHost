@@ -94,7 +94,7 @@ if($_REQUEST['season'] > 5)
 		echo "</td>";
 		if($row['P1ID'] == $_REQUEST['id'])
 		{
-			echo "<td>" . $row['P2Name'] . "</td>
+			echo "<td>" . htmlspecialchars($row['P2Name']) . "</td>
 			<td>" . GetRace($row['P2Race']) . "</td>";
 		}
 		else

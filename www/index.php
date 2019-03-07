@@ -98,15 +98,15 @@ else
 	{
 		$Nextbot = new BotResult();
 		$Nextbot->botid = $row['ID'];
-		$Nextbot->botname = $row['Name'];
+		$Nextbot->botname = htmlspecialchars($row['Name']);
 		$Nextbot->patreon = $row['Patreon'];
 		if($row['Alias'] == "")
 		{
-			$Nextbot->author= $row['username'];
+			$Nextbot->author= htmlspecialchars($row['username']);
 		}
 		else
 		{
-			$Nextbot->author= $row['Alias'];
+			$Nextbot->author= htmlspecialchars($row['Alias']);
 		}
 		
 		switch($row['Race'])
@@ -187,10 +187,9 @@ else
 		$resultsArray[] = $Nextbot;
 	}
 	usort($resultsArray, "cmp");
-
+  $i = 1;
   foreach ($resultsArray as $Bot)
   {
-	  $i = 1;
 	  if($Bot->matches > 0)
 	  {
 	  echo "
@@ -206,6 +205,7 @@ else
                                 <span>View Matches</span>
                             </button></td>
   </tr>";
+		$i ++;
 	  }
   }
 

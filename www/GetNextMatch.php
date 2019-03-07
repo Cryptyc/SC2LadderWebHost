@@ -21,7 +21,7 @@ if(!$usersrow = $usersResult->fetch_array(MYSQLI_ASSOC))
 
 if(!password_verify($_REQUEST["Password"], $usersrow["password"]))
 {
-	echo "User no verified for requesting matches " . $_REQUEST["Password"] . " " . $usersrow["password"];
+	echo "User no verified for requesting matches";
 	exit();
 }
 $sql = "SELECT * FROM `matches` ORDER BY `MatchTime` DESC";

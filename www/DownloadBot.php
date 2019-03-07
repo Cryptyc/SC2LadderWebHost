@@ -16,14 +16,14 @@ if(!$usersrow = $usersResult->fetch_array(MYSQLI_ASSOC))
 
 if(!password_verify($_REQUEST["Password"], $usersrow["password"]))
 {
-	die("User no verified for requesting matches " . $_REQUEST["Password"] . " " . $usersrow["password"]);
+	die("User no verified for requesting matches ");
 }
 
 $sql = "SELECT * FROM `participants` WHERE `Name`='" . mysqli_real_escape_string($link, $_REQUEST["BotName"]) . "'";
 $botResult =  $link->query($sql);
 if(!$botRow = $botResult->fetch_array(MYSQLI_ASSOC))
 {
-	die("Unable to find bot " . $_REQUEST["BotName"]);
+	die("Unable to find bot " . htmlspecialchars($_REQUEST["BotName"]));
 }
 
 if(isset($_REQUEST['Data']) && $_REQUEST["Data"] == "1")
@@ -37,7 +37,7 @@ else
 $attachment_location = $_SERVER["DOCUMENT_ROOT"] . "/" . $zip_location;
 if (file_exists($attachment_location)) {
 
-	header($_SERVER["SERVER_PROTOCOL"] . " 200 OK");
+	header("HTTP/1.1 200 OK");
 	header("Cache-Control: public"); // needed for internet explorer
 	header("Content-Type: application/zip");
 	header("Content-Transfer-Encoding: Binary");

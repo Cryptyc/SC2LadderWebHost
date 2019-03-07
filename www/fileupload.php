@@ -89,7 +89,7 @@ if(!$usersrow = $usersResult->fetch_array(MYSQLI_ASSOC))
 
 if(!password_verify($_REQUEST["Password"], $usersrow["password"]))
 {
-	die("User no verified for requesting matches " . $_REQUEST["Password"] . " " . $usersrow["password"]);
+	die("User no verified for requesting matches ");
 }
 
 // Attempt insert query execution
@@ -136,7 +136,7 @@ if(!password_verify($_REQUEST["Password"], $usersrow["password"]))
 	}
 	else
 	{
-		die("Unable to find Bot2: Name: " . $_REQUEST['Bot2Name'] . " Race: " . $_REQUEST['Bot2Race']);
+		die("Unable to find Bot2: Name: " . htmlspecialchars($_REQUEST['Bot2Name']) . " Race: " . htmlspecialchars($_REQUEST['Bot2Race']));
 	}
 	if($_REQUEST['Result'] == "Player1Crash" ||  $_REQUEST['Result'] == "Player2Win")
 	{

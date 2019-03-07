@@ -55,13 +55,13 @@ $result = $link->query($sql);
 		 $AuthorName = $row["Username"];
 	 }
 	 echo "<tr>
-			<td>" . $row["UploadedTime"] . "</td>
-			<td>" . $row["BotName"] . "</td>
-			<td>" . $AuthorName . "</td>
-			<td>" . $row["Email"] . "</td>
-			<td><a href=\"" . $row['FileLoc'] . "\">Download</a></td>
-			<td>" . $row["Comments"] . "</td>
-			<td>" . $row["AdminComments"] . "</td>
+			<td>" . htmlspecialchars($row["UploadedTime"]) . "</td>
+			<td>" . htmlspecialchars($row["BotName"]) . "</td>
+			<td>" . htmlspecialchars($AuthorName) . "</td>
+			<td>" . htmlspecialchars($row["Email"]) . "</td>
+			<td><a href=\"" . htmlspecialchars($row['FileLoc']) . "\">Download</a></td>
+			<td>" . htmlspecialchars($row["Comments"]) . "</td>
+			<td>" . htmlspecialchars($row["AdminComments"]) . "</td>
 			</tr>";
  }
 

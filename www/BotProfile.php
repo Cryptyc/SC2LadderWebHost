@@ -248,8 +248,8 @@ session_start();
 	  if($Bot->matches > 0)
 	  {
                   echo "<tr>
-                      <td>" . $Bot->author . "</td>
-                      <td>" . $Bot->botname . "</td>
+                      <td>" . htmlspecialchars($Bot->author) . "</td>
+                      <td>" . htmlspecialchars($Bot->botname) . "</td>
                       <td>" . $Bot->race . "</td>
                       <td>" . $Bot->matches . "</td>
                       <td>" . $Bot->wins . "</td>

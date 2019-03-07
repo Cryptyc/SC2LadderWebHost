@@ -49,19 +49,19 @@ if ($result->num_rows < 1) {
     </tr>
     <?php while ($row = $result->fetch_assoc()) { ?>
     <tr>
-        <td> <?php echo $row['Date']; ?>  </td>
-        <td> <?php echo $row['Bot1']; ?>  </td>
-        <td> <?php echo $row['Bot2']; ?>  </td>
-        <td> <?php echo $row['Map']; ?>  </td>
+        <td> <?php echo htmlspecialchars($row['Date']); ?>  </td>
+        <td> <?php echo htmlspecialchars($row['Bot1']); ?>  </td>
+        <td> <?php htmlspecialchars(echo $row['Bot2']); ?>  </td>
+        <td> <?php htmlspecialchars(echo $row['Map']); ?>  </td>
         <td> 
 		<?php 
 		if($row['Winner'] == $row['Bot1ID'] )
 		{
-					echo $row['Bot1'];
+					echo htmlspecialchars($row['Bot1']);
 		}
 		else if ($row['Winner'] == $row['Bot2ID'])
 		{
-			echo $row['Bot2'];
+			echo htmlspecialchars($row['Bot2']);
 		}
 		?>  </td>
 		<td> <?php echo $row['Result']; ?>  </td>
