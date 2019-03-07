@@ -11,7 +11,7 @@ include_once 'config.php';
 	if($link->connect_error){
 		die("ERROR: Could not connect. " . mysqli_connect_error());
 	}
-	$sql = "SELECT * FROM `members` WHERE `username` = '" . $_REQUEST['username'] . "' AND `email` = '" . $_REQUEST['email'] . "'";
+	$sql = "SELECT * FROM `members` WHERE `username` = '" . mysqli_real_escape_string($link, $_REQUEST['username']) . "' AND `email` = '" . mysqli_real_escape_string($link, $_REQUEST['email']) . "'";
 	$result = $link->query($sql);
 	if($row = $result->fetch_assoc())
 	{
