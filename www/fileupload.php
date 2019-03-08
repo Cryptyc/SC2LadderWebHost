@@ -80,7 +80,7 @@ if($link->connect_error){
     die("ERROR: Could not connect. " . mysqli_connect_error());
 }
  
- $sql = "SELECT * FROM `members` WHERE `username` = '" . mysqli_real_escape_string($link, $_REQUEST["username"]) . "'";
+ $sql = "SELECT * FROM `members` WHERE `username` = '" . mysqli_real_escape_string($link, $_REQUEST["Username"]) . "' AND CanRequestGames='1'";
 $usersResult = $link->query($sql);
 if(!$usersrow = $usersResult->fetch_array(MYSQLI_ASSOC))
 {
