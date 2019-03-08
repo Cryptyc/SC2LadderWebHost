@@ -15,7 +15,8 @@ require_once("header.php")
 	while($row = $result->fetch_array(MYSQLI_ASSOC))
 	{
 		$resSql = "SELECT * FROM `results` 
-		WHERE SeasonId ='6'
+		INNER JOIN seasonids on seasonids.id = results.seasonid 
+		WHERE seasonids.Current = 1
 		AND (`results`.Bot1='" . $row["ID"] . "' OR `results`.`Bot2`='" . $row["ID"] . "')
 		AND (`results`.Bot1AvgFrame > 0 OR `results`.`Bot2AvgFrame` > 0)";
 		$BotResult = $link->query($resSql);
