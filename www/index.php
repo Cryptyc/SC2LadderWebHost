@@ -212,11 +212,11 @@ else
    ?>
   </table>
  <?php
-  $sql = "SELECT max(date) AS 'LastDate' from `results`";
+  $sql = "SELECT max(date) AS 'LastDate', ROUND((UNIX_TIMESTAMP() - UNIX_TIMESTAMP(max(date))) / 60) as 'Minutes' from `results`";
   $LastDateResult = $link->query($sql);
   if($LastDateRow = $LastDateResult->fetch_array(MYSQLI_ASSOC))
   {
-	  echo "Last result received : " . $LastDateRow['LastDate'] . " UTC<br>";
+	  echo "Last result received : " . $LastDateRow['LastDate'] . " UTC (" . $LastDateRow['Minutes'] . " minutes ago)<br>";
   }
   $sql = "SELECT Count(GameID) AS results FROM results WHERE date >= now() - INTERVAL 1 DAY";
   $LastDateResult = $link->query($sql);
