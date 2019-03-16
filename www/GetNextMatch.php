@@ -4,6 +4,7 @@ $races[1] = "Zerg";
 $races[2] = "Protoss";
 $races[3] = "Random";
 $skipping_per = 20;  //percentage of battles skipped to create opponent mixture.
+$new_skipping_per = 50;  //percentage of battles skipped to create opponent mixture.
 
 require_once("dbconf.php");
 $link = new mysqli($host, $username, $password , $db_name);
@@ -81,6 +82,9 @@ if($firstrow)
 		}
 		else
 		{
+			if (rand(0,100) <= $new_skipping_per) {
+				continue;
+			}			
 			$secondrow = $row;
 			break;
 		}
