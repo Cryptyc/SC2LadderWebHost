@@ -224,3 +224,10 @@ a.article, a.article:hover {
   margin-bottom: 10px;
 }
 
+/* ---------------------------------------------------
+    RECENT MATCHES
+----------------------------------------------------- */
+
+a.download-btn {
+    margin: 0;
+}

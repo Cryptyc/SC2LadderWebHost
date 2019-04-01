@@ -69,7 +69,8 @@ if ($result->num_rows < 1) {
                 ?>  </td>
             <td> <?php echo $row['Result']; ?>  </td>
             <td>
-                <a class="btn btn-info navbar-btn" href="<?php echo $row['ReplayFile'] ?>">
+                <a class="btn btn-info navbar-btn download-btn" href="<?php echo $row['ReplayFile'] ?>">
+                    <span class="glyphicon glyphicon-cloud-download" aria-hidden="true"></span>
                     <span>Replay</span>
                 </button>
             </td>
