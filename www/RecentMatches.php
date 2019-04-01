@@ -66,7 +66,7 @@ if ($result->num_rows < 1) {
 		?>  </td>
 		<td> <?php echo $row['Result']; ?>  </td>
         <td>
-            <button type="button" id="Replay" class="btn btn-info navbar-btn" onclick="window.location.href='<?php echo $row['ReplayFile'] ?>'">
+            <a class="btn btn-info navbar-btn" href="<?php echo $row['ReplayFile'] ?>">
                 <span>Replay</span>
             </button>
         </td>
