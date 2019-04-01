@@ -19,6 +19,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -q \
         && docker-php-ext-install curl \
         && docker-php-ext-install mysqli \
         && docker-php-ext-install pdo \
+        && docker-php-ext-install pdo_mysql \
         && docker-php-ext-install mbstring \
         && docker-php-ext-install json
 
