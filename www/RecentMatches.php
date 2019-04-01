@@ -32,57 +32,61 @@ if ($result->num_rows < 1) {
 }
 ?>
 <table id="RecentMatchesTable" class="table table-striped" style="width: auto;">
-    <tr>
-        <?php $column_id = 0; ?>
-        <th onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Date</th>
-        <th onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Bot1</th>
-        <th onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Bot2</th>
-        <th onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Map</th>
-        <th onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Winner</th>
-        <th onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Result</th>
-        <th onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">ReplayFile</th>
-        <th onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Bot1Change</th>
-        <th onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Bot2Change</th>
-        <th onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Bot1AvgFrame</th>
-        <th onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Bot2AvgFrame</th>
-        <th onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Time</th>
-    </tr>
-    <?php while ($row = $result->fetch_assoc()) { ?>
-    <tr>
-        <td> <?php echo htmlspecialchars($row['Date']); ?>  </td>
-        <td> <?php echo htmlspecialchars($row['Bot1']); ?>  </td>
-        <td> <?php echo htmlspecialchars($row['Bot2']); ?>  </td>
-        <td> <?php echo htmlspecialchars($row['Map']); ?>  </td>
-        <td> 
-		<?php 
-		if($row['Winner'] == $row['Bot1ID'] )
-		{
-					echo htmlspecialchars($row['Bot1']);
-		}
-		else if ($row['Winner'] == $row['Bot2ID'])
-		{
-			echo htmlspecialchars($row['Bot2']);
-		}
-		?>  </td>
-		<td> <?php echo $row['Result']; ?>  </td>
-        <td>
-            <a class="btn btn-info navbar-btn" href="<?php echo $row['ReplayFile'] ?>">
-                <span>Replay</span>
-            </button>
-        </td>
-        <td> <?php echo $row['Bot1Change']; ?>  </td>
-        <td> <?php echo $row['Bot2Change']; ?>  </td>
-        <td> <?php echo $row['Bot1AvgFrame']; ?>  </td>
-        <td> <?php echo $row['Bot2AvgFrame']; ?>  </td>
-        <td> <?php 
-		if($row["Frames"] > 0)
-		{
-			$seconds = $row["Frames"] / 22.4;
-			echo gmdate("H:i:s", $seconds);
-		} ?> 
-		</td>
-    </tr>
-    <?php } ?>
+    <thead>
+        <tr>
+            <?php $column_id = 0; ?>
+            <th class="sortable" onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Date</th>
+            <th class="sortable" onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Bot1</th>
+            <th class="sortable" onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Bot2</th>
+            <th class="sortable" onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Map</th>
+            <th class="sortable" onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Winner</th>
+            <th class="sortable" onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Result</th>
+            <th class="sortable" onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">ReplayFile</th>
+            <th class="sortable" onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Bot1Change</th>
+            <th class="sortable" onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Bot2Change</th>
+            <th class="sortable" onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Bot1AvgFrame</th>
+            <th class="sortable" onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Bot2AvgFrame</th>
+            <th class="sortable" onclick="bubbleSortTable('RecentMatchesTable', <?php echo $column_id++ ?>)">Time</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php while ($row = $result->fetch_assoc()) { ?>
+        <tr>
+            <td> <?php echo htmlspecialchars($row['Date']); ?>  </td>
+            <td> <?php echo htmlspecialchars($row['Bot1']); ?>  </td>
+            <td> <?php echo htmlspecialchars($row['Bot2']); ?>  </td>
+            <td> <?php echo htmlspecialchars($row['Map']); ?>  </td>
+            <td> 
+                <?php 
+                if($row['Winner'] == $row['Bot1ID'] )
+                {
+                    echo htmlspecialchars($row['Bot1']);
+                }
+                else if ($row['Winner'] == $row['Bot2ID'])
+                {
+                    echo htmlspecialchars($row['Bot2']);
+                }
+                ?>  </td>
+            <td> <?php echo $row['Result']; ?>  </td>
+            <td>
+                <a class="btn btn-info navbar-btn" href="<?php echo $row['ReplayFile'] ?>">
+                    <span>Replay</span>
+                </button>
+            </td>
+            <td> <?php echo $row['Bot1Change']; ?>  </td>
+            <td> <?php echo $row['Bot2Change']; ?>  </td>
+            <td> <?php echo $row['Bot1AvgFrame']; ?>  </td>
+            <td> <?php echo $row['Bot2AvgFrame']; ?>  </td>
+            <td> <?php 
+                if($row["Frames"] > 0)
+                {
+                    $seconds = $row["Frames"] / 22.4;
+                    echo gmdate("H:i:s", $seconds);
+                } ?> 
+            </td>
+        </tr>
+        <?php } ?>
+    </tbody>
 </table>
 <?php require_once("footer.php"); ?>
 </body>
