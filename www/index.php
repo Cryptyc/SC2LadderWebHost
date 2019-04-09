@@ -125,7 +125,7 @@ else
 				$Nextbot->race = "Random";
 				break;
 			default:
-				$Nextbot->race = "Unnkown";
+				$Nextbot->race = "Unkown";
 
 //				die("Unknown race" . $row['Race']);
 

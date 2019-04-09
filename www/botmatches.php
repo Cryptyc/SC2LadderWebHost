@@ -56,23 +56,23 @@ require_once("header.php");
 ?>
 			<table id="MatchHistoryTable" class="table table-striped" style="width: auto;">
 	<tr>
-		<th onclick="bubbleSortTable('MatchHistoryTable', 0)">Time</th>
-		<th onclick="bubbleSortTable('MatchHistoryTable', 1)">Opponent Name</th>
-		<th onclick="bubbleSortTable('MatchHistoryTable', 2)">Race</th>
-		<th onclick="bubbleSortTable('MatchHistoryTable', 3)">Map</th>
-		<th onclick="bubbleSortTable('MatchHistoryTable', 4)">Result</th>
+		<th class="sortable" onclick="bubbleSortTable('MatchHistoryTable', 0)">Time</th>
+		<th class="sortable" onclick="bubbleSortTable('MatchHistoryTable', 1)">Opponent Name</th>
+		<th class="sortable" onclick="bubbleSortTable('MatchHistoryTable', 2)">Race</th>
+		<th class="sortable" onclick="bubbleSortTable('MatchHistoryTable', 3)">Map</th>
+		<th class="sortable" onclick="bubbleSortTable('MatchHistoryTable', 4)">Result</th>
 <?php
 if($_REQUEST['season'] > 4)
 {
-		echo "<th onclick=\"bubbleSortTable('MatchHistoryTable', 5)\">ELO Change</th>";
+		echo "<th  class=\"sortable\" onclick=\"bubbleSortTable('MatchHistoryTable', 5)\">ELO Change</th>";
 }
 ?>
-		<th onclick="bubbleSortTable('MatchHistoryTable', 6)">Replay</th>
+		<th class="sortable" onclick="bubbleSortTable('MatchHistoryTable', 6)">Replay</th>
 <?php
 if($_REQUEST['season'] > 5)
 {
-		echo "<th onclick=\"bubbleSortTable('MatchHistoryTable', 7)\">Game Time</th>";
-		echo "<th onclick=\"bubbleSortTable('MatchHistoryTable', 7)\">Avg Frame</th>";
+		echo "<th class=\"sortable\" onclick=\"bubbleSortTable('MatchHistoryTable', 7)\">Game Time</th>";
+		echo "<th class=\"sortable\" onclick=\"bubbleSortTable('MatchHistoryTable', 7)\">Avg Frame</th>";
 }
 	echo "</tr>";
 
