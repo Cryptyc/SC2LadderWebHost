@@ -59,6 +59,7 @@
         <!-- Our Custom CSS -->
         <link rel="stylesheet" href="style.css">
 		<link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
     </head>
     <body>
         <div class="wrapper">
