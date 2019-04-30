@@ -152,13 +152,13 @@ session_start();
 
 	function getOppStats($bot_id, $opp_id, $link, $season_id) {
 		$opp_total_matches = 0;
-		$sql = "SELECT COUNT(*) as Matches FROM results WHERE Bot1='" . $opp_id . "' OR Bot2='" . $opp_id . "' AND SeasonId = '" . $season_id . "' LIMIT 1";
+		$sql = "SELECT COUNT(*) as Matches FROM results WHERE (Bot1='" . $opp_id . "' OR Bot2='" . $opp_id . "') AND SeasonId = '" . $season_id . "' LIMIT 1";
 		$result  = $link->query($sql);
 		if($opp_row = $result->fetch_array(MYSQLI_ASSOC)) {
 			$opp_total_matches = $opp_row['Matches'];
 		}
 		$opp_vs_matches = 0;
-		$sql = "SELECT COUNT(*) as Matches FROM results WHERE (Bot1='" . $opp_id . "' AND Bot2='" . $bot_id . "') OR (Bot1='" . $bot_id . "' AND Bot2='" . $opp_id . "') AND SeasonId = '" . $season_id . "' LIMIT 1";
+		$sql = "SELECT COUNT(*) as Matches FROM results WHERE ((Bot1='" . $opp_id . "' AND Bot2='" . $bot_id . "') OR (Bot1='" . $bot_id . "' AND Bot2='" . $opp_id . "')) AND SeasonId = '" . $season_id . "' LIMIT 1";
 		$result  = $link->query($sql);
 		if($opp_row = $result->fetch_array(MYSQLI_ASSOC)) {
 			$opp_vs_matches = $opp_row['Matches'];
@@ -214,13 +214,13 @@ session_start();
 	
 	function getEloExchange($bot_id, $opp_id, $link, $season_id) {
 		$bot1_exchange = 0;
-		$sql = "SELECT SUM(Bot1Change) as botsum FROM results WHERE (Bot1='" . $bot_id . "' AND Bot2='" . $opp_id . "') AND SeasonId = '" . $season_id . "' LIMIT 1";
+		$sql = "SELECT SUM(Bot1Change) as botsum FROM results WHERE Bot1='" . $bot_id . "' AND Bot2='" . $opp_id . "' AND SeasonId = '" . $season_id . "' LIMIT 1";
 		$result  = $link->query($sql);
 		if($opp_row = $result->fetch_array(MYSQLI_ASSOC)) {
 			$bot1_exchange = $opp_row['botsum'];
 		}
 		$bot2_exchange = 0;
-		$sql = "SELECT SUM(Bot2Change) as botsum FROM results WHERE (Bot2='" . $bot_id . "' AND Bot1='" . $opp_id . "') AND SeasonId = '" . $season_id . "' LIMIT 1";
+		$sql = "SELECT SUM(Bot2Change) as botsum FROM results WHERE Bot2='" . $bot_id . "' AND Bot1='" . $opp_id . "' AND SeasonId = '" . $season_id . "' LIMIT 1";
 		$result  = $link->query($sql);
 		if($opp_row = $result->fetch_array(MYSQLI_ASSOC)) {
 			$bot2_exchange = $opp_row['botsum'];
