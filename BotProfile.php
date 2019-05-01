@@ -255,10 +255,10 @@ session_start();
 	$terr_radi = '';
 	$rand_radi = '';
 	
-	$zerg_bot_data = '';
-	$toss_bot_data = '';
-	$terr_bot_data = '';
-	$rand_bot_data = '';
+	$terr_info = '';
+	$toss_info = '';
+	$terr_info = '';
+	$rand_info = '';
 
 	$sql = "SELECT MAX(CurrentELO) AS maxELO, MIN(NULLIF(CurrentELO, 0)) AS minELO FROM participants LIMIT 1";
 	$result = $link->query($sql);
@@ -333,15 +333,50 @@ session_start();
 <canvas id="oppScatterChart" width="400" height="200"></canvas>
 <script>
 	
-function getColor(value) {
-    //value from 0 to 1
-    var hue=((100-(value))*120).toString(10);
-    return ["hsl(",hue,",100%,50%)"].join("");
-}	
+function percentageToHsl(percentage, hue0, hue1) {
+    var hue = (percentage * (hue1 - hue0)) + hue0;
+    return 'hsl(' + hue + ', 100%, 50%)';
+}
+
+function wrapResult(result) {
+	var color = 'rgb(233, 255, 0)';
+	if (result == 'WIN') {
+		color = 'rgb(0, 255, 33)';
+	}
+	else if (result == 'LOSS') {
+		color = 'rgb(255, 0, 0)';
+	}
+	return '<span style="color:' + color + '">' + result + '</span>';
+}
 
 function wrapPercent(value) {
-	color = getColor(value);
-	return '<font style="color:' + color + '">' + value + '</font>';
+	//color = getColor(value);
+	var color = percentageToHsl((value / 100), 0, 120);
+	return '<span style="color:' + color + '">' + value + '%</span>';
+}
+
+function wrapELOExchange(value) {
+	var color = 'rgb(233, 255, 0)';
+	if (value > 0) {
+		color = 'rgb(0, 255, 33)';
+		value = '+' + value;
+	}
+	else if (value < 0) {
+		color = 'rgb(255, 0, 0)';		
+	}
+	return '<span style="color:' + color + '">' + numberWithCommas(value) + '</span>';
+}
+
+function wrapELORank(rank, elo, max_elo, min_elo) {
+	var adj = max_elo - min_elo;
+	var o_adj = elo - min_elo;
+	var adj_elo = o_adj / adj;
+	var color = percentageToHsl(adj_elo, 0, 120);
+	return '<span style="color:' + color + '">' + rank + '</span> (<span style="color:' + color + '">' + numberWithCommas(elo) + '</span>)';
+}
+
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 
@@ -350,6 +385,10 @@ Chart.Legend.prototype.afterFit = function() {
 };
 var basebot = '<?php echo htmlspecialchars($row['BotName']); ?>';
 var ctx = document.getElementById('oppScatterChart');
+var maxELO = '<?php echo $max_elo; ?>';
+var minELO = '<?php echo $min_elo; ?>';
+var ranks = '<?php echo $rank + 1; ?>';
+
 var scatterChart = new Chart(ctx, {
     type: 'scatter',
     data: {
@@ -360,7 +399,8 @@ var scatterChart = new Chart(ctx, {
             info: [<?php echo $toss_info; ?>],
 			pointRadius: [<?php echo $toss_radi; ?>],
 			pointHoverRadius: [<?php echo $toss_radi; ?>],
-			backgroundColor: 'rgba(67, 255, 0, 0.5)'
+			backgroundColor: 'rgba(67, 255, 0, 0.5)',
+			highlightColor: 'rgb(67, 255, 0)'
 			
 			},				   
 			{
@@ -369,7 +409,8 @@ var scatterChart = new Chart(ctx, {
             info: [<?php echo $terr_info; ?>],
 			pointRadius: [<?php echo $terr_radi; ?>],
 			pointHoverRadius: [<?php echo $terr_radi; ?>],
-			backgroundColor: 'rgba(72, 0, 255, 0.5)'
+			backgroundColor: 'rgba(72, 0, 255, 0.5)',
+			highlightColor: 'rgb(0, 127, 255)'
 			},
 			{
             label: 'Zerg',
@@ -377,7 +418,8 @@ var scatterChart = new Chart(ctx, {
             info: [<?php echo $zerg_info; ?>],
 			pointRadius: [<?php echo $zerg_radi; ?>],
 			pointHoverRadius: [<?php echo $zerg_radi; ?>],
-			backgroundColor: 'rgba(255, 4, 0, 0.5)'
+			backgroundColor: 'rgba(255, 4, 0, 0.5)',
+			highlightColor: 'rgb(255, 64, 61)'
 			},
 			{
             label: 'Random',
@@ -385,27 +427,126 @@ var scatterChart = new Chart(ctx, {
             info: [<?php echo $rand_info; ?>],
 			pointRadius: [<?php echo $rand_radi; ?>],
 			pointHoverRadius: [<?php echo $rand_radi; ?>],
-			backgroundColor: 'rgba(225, 255, 0, 0.5)'
+			backgroundColor: 'rgba(225, 255, 0, 0.5)',
+			highlightColor: 'rgb(255, 255, 0)'			
 			}]
     },
     options: {
 		tooltips: {
+			//position: 'custom',
+			yAlign: 'top',
+			xAlign: 'left',
+			enabled: false,
+            custom: function(tooltipModel) {
+                // Tooltip Element
+                var tooltipEl = document.getElementById('chartjs-tooltip');
+
+                // Create element on first render
+                if (!tooltipEl) {
+                    tooltipEl = document.createElement('div');
+                    tooltipEl.id = 'chartjs-tooltip';
+                    tooltipEl.innerHTML = '<table></table>';
+                    document.body.appendChild(tooltipEl);
+                }
+
+                // Hide if no tooltip
+                if (tooltipModel.opacity === 0) {
+                    tooltipEl.style.opacity = 0;
+                    return;
+                }
+
+                // Set caret Position
+                tooltipEl.classList.remove('above', 'below', 'no-transform');
+                if (tooltipModel.yAlign) {
+                    tooltipEl.classList.add(tooltipModel.yAlign);
+                } else {
+                    tooltipEl.classList.add('no-transform');
+                }
+
+                function getBody(bodyItem) {
+                    return bodyItem.lines;
+                }
+
+                // Set Text
+                if (tooltipModel.body) {
+                    var titleLines = tooltipModel.title || [];
+                    var bodyLines = tooltipModel.body.map(getBody);
+                    var innerHtml = '<thead>';
+
+                    titleLines.forEach(function(title) {
+                        innerHtml += '<tr><th>' + title + '</th></tr>';
+                    });
+                    innerHtml += '</thead><tbody>';
+
+                    bodyLines.forEach(function(body, i) {
+                        var colors = tooltipModel.labelColors[i];
+                        var style = 'background:' + colors.backgroundColor;
+                        style += '; border-color:' + colors.borderColor;
+                        style += '; border-width: 2px';
+                        var span = '<span style="' + style + '"></span>';
+                        innerHtml += '<tr><td>' + span + body + '</td></tr>';
+                    });
+                    innerHtml += '</tbody>';
+
+                    var tableRoot = tooltipEl.querySelector('table');
+                    tableRoot.innerHTML = innerHtml;
+                }
+				
+				var position = this._chart.canvas.getBoundingClientRect();	
+                // Display, position, and set styles for font
+                tooltipEl.style.opacity = 1;
+                tooltipEl.style.position = 'absolute';
+				if (tooltipModel.dataPoints[0].xLabel < -40) {
+					//on the far left side, add the car position.
+					tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 100 + 'px';
+				}
+				else if (tooltipModel.dataPoints[0].xLabel > 35) {
+					tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX - 100 + 'px';
+				}
+				else{
+					tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px';
+				}
+
+				if (tooltipModel.dataPoints[0].yLabel < -20) {
+					tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY - 140 + 'px';
+				}
+				else {
+					tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px';
+				}			
+                tooltipEl.style.fontFamily = tooltipModel._bodyFontFamily;
+                tooltipEl.style.fontSize = tooltipModel.bodyFontSize + 'px';
+                tooltipEl.style.fontStyle = tooltipModel._bodyFontStyle;
+                tooltipEl.style.padding = tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px';
+                tooltipEl.style.pointerEvents = 'none';
+            },
 			callbacks: {
-				label: function(tooltipItem, data) {
-					var label = " " + data.datasets[tooltipItem.datasetIndex].info[tooltipItem.index][0] + " ("  + data.datasets[tooltipItem.datasetIndex].label + ")";
-					return label;
-				},
-				afterLabel: function(tooltipItem, data) {
-					//name, overallwin%, win%, elo, radius, rank, last_update, last_result, last_result_date, vs_matches, overall_matches
-					var elo_text = 'Rank (ELO): ' + data.datasets[tooltipItem.datasetIndex].info[tooltipItem.index][5] + " (" + data.datasets[tooltipItem.datasetIndex].info[tooltipItem.index][3] + ")";
-					var exc_text = 'Elo Exchange: ' + data.datasets[tooltipItem.datasetIndex].info[tooltipItem.index][11];
-					var opp_text = "vs. winrate: " + data.datasets[tooltipItem.datasetIndex].info[tooltipItem.index][2] + "% (" + data.datasets[tooltipItem.datasetIndex].info[tooltipItem.index][9] + " matches)";
-					var all_text = 'overall winrate: ' + data.datasets[tooltipItem.datasetIndex].info[tooltipItem.index][1] + '% (' + data.datasets[tooltipItem.datasetIndex].info[tooltipItem.index][10] + " matches)";
-					var last_text = 'last game: ' + data.datasets[tooltipItem.datasetIndex].info[tooltipItem.index][7] + ' (' + data.datasets[tooltipItem.datasetIndex].info[tooltipItem.index][8] + ')';
-					var last_update = 'last update: ' + data.datasets[tooltipItem.datasetIndex].info[tooltipItem.index][6];					
-					return [elo_text, exc_text, opp_text, all_text, last_text, last_update];
-				}				
-			}
+                labeltest: function(tooltipItem, data) {
+                    var dataset = data.datasets[tooltipItem.datasetIndex];
+                    var tooltip = dataset.info[tooltipItem.index];
+                    var html = "<div class=\"tooltip_title\"><b>" + tooltip[0] + "</b>";
+                    html += " <span style=\"color:" + dataset.highlightColor + ";\">" + dataset.label + "</span></div>";
+                    html += '<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">Rank (ELO):</div><div class=\"tooltip_row_right\">' + wrapELORank(tooltip[5], tooltip[3], maxELO, minELO) + "</div></div>";
+                    html += "<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">Overall Winrate:</div><div class=\"tooltip_row_right\">" + numberWithCommas(tooltip[10]) + " matches " + wrapPercent(tooltip[1]) + "</div></div>";
+                    html += "<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">Vs. Winrate:</div><div class=\"tooltip_row_right\">" + numberWithCommas(tooltip[9]) + " matches " + wrapPercent(tooltip[2]) + "</div></div>";
+                    html += '<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">ELO Exchange:</div><div class=\"tooltip_row_right\">' + wrapELOExchange(tooltip[11]) + "</div></div>";
+                      html += '<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">Last Match:</div><div class=\"tooltip_row_right\">' + tooltip[8] + " " + wrapResult(tooltip[7]) + '</div></div>';
+                    html += '<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">Last Update:</div><div class=\"tooltip_row_right\">' + tooltip[6] + "</div></div>";
+                    return html;
+                },
+                label: function(tooltipItem, data) {
+                    var dataset = data.datasets[tooltipItem.datasetIndex];
+                    var tooltip = dataset.info[tooltipItem.index];
+                    var html = "<div class=\"tooltip_title\"><b>" + tooltip[0] + "</b>";
+                    html += " <span style=\"color:" + dataset.highlightColor + ";\">" + dataset.label + "</span></div>";
+                    html += '<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">Rank (ELO):</div><div class=\"tooltip_row_right\">' + wrapELORank(tooltip[5], tooltip[3], maxELO, minELO) + "</div></div>";
+                    html += "<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">Overall Winrate:</div><div class=\"tooltip_row_right\">" + wrapPercent(tooltip[1]) + ' ' + numberWithCommas(tooltip[10]) + " matches</div></div>";
+                    html += '<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">ELO Exchange:</div><div class=\"tooltip_row_right\">' + wrapELOExchange(tooltip[11]) + "</div></div>";
+                    html += "<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">Vs. Winrate:</div><div class=\"tooltip_row_right\">" + wrapPercent(tooltip[2]) + " " + numberWithCommas(tooltip[9]) + " matches</div></div>";
+                    html += '<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">Last Match:</div><div class=\"tooltip_row_right\">' + wrapResult(tooltip[7]) + ' ' + tooltip[8] + '</div></div>';
+                    html += '<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">Last Update:</div><div class=\"tooltip_row_right\">' + tooltip[6] + "</div></div>";
+                    return html;
+                },					
+            }
 		},
 		layout: {
             padding: {
@@ -491,7 +632,8 @@ var scatterChart = new Chart(ctx, {
 			`participants`.`Race` AS Race,
 			`participants`.`CurrentELO` AS ELO,
 			`members`.`username` AS username,
-			`members`.`Alias` AS Alias
+			`members`.`Alias` AS Alias,
+			`members`.id as authId
 			FROM `participants`, `members`
 			WHERE `participants`.`Author` = `members`.`id`";
 	$OpponentResult = $link->query($sql);
@@ -505,6 +647,7 @@ var scatterChart = new Chart(ctx, {
 		$Nextbot = new BotRecord();
 		$Nextbot->botid = $opponentRow['ID'];
 		$Nextbot->botname = $opponentRow['Name'];
+		$Nextbot->authID = $opponentRow['authId'];
 		if(!isset($row['Alias']) || $row['Alias'] == "")
 		{
 			$Nextbot->author= $opponentRow['username'];
@@ -571,8 +714,8 @@ var scatterChart = new Chart(ctx, {
 	  if($Bot->matches > 0)
 	  {
                   echo "<tr>
-                      <td>" . htmlspecialchars($Bot->author) . "</td>
-                      <td>" . htmlspecialchars($Bot->botname) . "</td>
+                      <td><a href=\"/AuthorProfile.php?author=" . $Bot->authID . "\">"  . htmlspecialchars($Bot->author) . "</a></td>
+                      <td><a href=\"/BotProfile.php?BotId=" . $Bot->botid . "&season=" . $CurrentSeason . "\">" . htmlspecialchars($Bot->botname) . "</a></td>
                       <td>" . $Bot->race . "</td>
                       <td>" . $Bot->matches . "</td>
                       <td>" . $Bot->wins . "</td>
@@ -612,4 +755,3 @@ var scatterChart = new Chart(ctx, {
 
   </body>
 </html>
-                                                      
