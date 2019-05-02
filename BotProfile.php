@@ -105,7 +105,7 @@ session_start();
               
           <ul class="list-group">
             <li class="list-group-item text-muted">Profile</li>
-            <li class="list-group-item text-right"><span class="pull-left"><strong>Games</strong></span> <?php echo htmlspecialchars($BotMatches); ?></li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Games</strong></span><a href="/botmatches.php?id=<?php echo $row['BotID']; ?>&season=<?php echo $CurrentSeason; ?>"><?php echo htmlspecialchars($BotMatches); ?></a></li>
             <li class="list-group-item text-right"><span class="pull-left"><strong>Wins</strong></span> <?php echo htmlspecialchars($BotWins); ?></li>
             <li class="list-group-item text-right"><span class="pull-left"><strong>Current ELO</strong></span> <?php echo htmlspecialchars($row['ELO']); ?></li>
             <li class="list-group-item text-right"><span class="pull-left"><strong>Last Update</strong></span> <?php echo htmlspecialchars($row['UploadedTime']); ?></li>
@@ -300,7 +300,6 @@ session_start();
 			$terr_info .= "['" .  htmlspecialchars($chartrow['Name']) . "', '$p_overall_win', '$p_vs_win',";
 			$terr_info .= "'" . $chartrow['CurrentELO'] . "', '$opp_radius', '$rank', '$opp_update', '" . $opp_res_arr[0] . "',  '" . $opp_res_arr[1] . "', ";
 			$terr_info .= "'" . $stats_arr[1] . "', '" . $stats_arr[0] . "', '$elo_exchange'],";
-
 			$terr_data .= "{ x: $overall_win, y: $vs_win },";
 			$terr_radi .= "'" . $opp_radius . "',";
 		}
@@ -308,7 +307,6 @@ session_start();
 			$zerg_info .= "['" .  htmlspecialchars($chartrow['Name']) . "', '$p_overall_win', '$p_vs_win',";
 			$zerg_info .= "'" . $chartrow['CurrentELO'] . "', '$opp_radius', '$rank', '$opp_update', '" . $opp_res_arr[0] . "',  '" . $opp_res_arr[1] . "', ";
 			$zerg_info .= "'" . $stats_arr[1] . "', '" . $stats_arr[0] . "', '$elo_exchange'],";
-
 			$zerg_data .= "{ x: $overall_win, y: $vs_win },";
 			$zerg_radi .= "'" . $opp_radius . "',";
 		}
@@ -316,7 +314,6 @@ session_start();
 			$toss_info .= "['" .  htmlspecialchars($chartrow['Name']) . "', '$p_overall_win', '$p_vs_win',";
 			$toss_info .= "'" . $chartrow['CurrentELO'] . "', '$opp_radius', '$rank', '$opp_update', '" . $opp_res_arr[0] . "',  '" . $opp_res_arr[1] . "', ";
 			$toss_info .= "'" . $stats_arr[1] . "', '" . $stats_arr[0] . "', '$elo_exchange'],";
-
 			$toss_data .= "{ x: $overall_win, y: $vs_win },";
 			$toss_radi .= "'" . $opp_radius . "',";
 		}
@@ -324,7 +321,6 @@ session_start();
 			$rand_info .= "['" .  htmlspecialchars($chartrow['Name']) . "', '$p_overall_win', '$p_vs_win',";
 			$rand_info .= "'" . $chartrow['CurrentELO'] . "', '$opp_radius', '$rank', '$opp_update', '" . $opp_res_arr[0] . "',  '" . $opp_res_arr[1] . "', ";
 			$rand_info .= "'" . $stats_arr[1] . "', '" . $stats_arr[0] . "', '$elo_exchange'],";
-
 			$rand_data .= "{ x: $overall_win, y: $vs_win },";
 			$rand_radi .= "'" . $opp_radius . "',";
 		}
