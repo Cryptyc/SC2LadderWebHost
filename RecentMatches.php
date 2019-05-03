@@ -14,12 +14,11 @@ INNER JOIN participants AS participant2 ON participant2.ID = matches.Bot2ID
 ORDER BY MatchId DESC
 LIMIT 1";
 $result = $link->query($sql);
-if($entry = $result->fetch_array(MYSQLI_ASSOC))
-{
+if($entry = $result->fetch_array(MYSQLI_ASSOC)) {
 	if ($entry['Started'] < 60) {
 		echo "<h3>In progress:</h3><a href=\"/BotProfile.php?BotId=" . $entry['Bot1ID'] . "\">";
 		echo htmlspecialchars($entry['Bot1']) . "</a> vs <a href=\"/BotProfile.php?BotId=" . $entry['Bot2ID'] . "\">";
-		echo htmlspecialchars($entry['Bot2']) . "</a> started on " . htmlspecialchars(explode('.', $entry['MapName'])[0]) . " " . $entry['Started'] . " minutes ago<br>";
+		echo htmlspecialchars($entry['Bot2']) . "</a> started on " . linkMapHTML($entry['MapName']) . " " . $entry['Started'] . " minutes ago<br>";
 	}
 }
 ?>
@@ -77,7 +76,7 @@ if ($result->num_rows < 1) {
             <td> <?php echo htmlspecialchars($row['Date']); ?>  </td>
             <td> <a href="/BotProfile.php?BotId=<?php echo $row['Bot1ID'] ?>&season=<?php echo $row['SeasonId'] ?>"><?php echo htmlspecialchars($row['Bot1']); ?></a></td>
             <td> <a href="/BotProfile.php?BotId=<?php echo $row['Bot2ID'] ?>&season=<?php echo $row['SeasonId'] ?>"><?php echo htmlspecialchars($row['Bot2']); ?></a></td>
-            <td> <?php echo htmlspecialchars($row['Map']); ?>  </td>
+            <td> <?php echo linkMapHTML($row['Map']); ?>  </td>
             <td> 
                 <?php 
                 if($row['Winner'] == $row['Bot1ID'] )

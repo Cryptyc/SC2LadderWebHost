@@ -103,7 +103,7 @@ if($_REQUEST['season'] > 5)
 			echo "<td><a href=\"/BotProfile.php?BotId=" . $row['P2ID'] . "&season=" . $row['SeasonId'] . "\">" . $row['P1Name'] . "</a></td>
 			<td>" . GetRace($row['P1Race']) . "</td>";
 		}
-		echo "<td>" . $row['Map'] . "</td>";
+		echo "<td>" . linkMapHTML($row['Map']) . "</td>";
 		echo "<td>";
 		if($row['Winner'] == $_REQUEST['id'])
 		{
