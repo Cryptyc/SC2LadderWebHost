@@ -36,7 +36,8 @@ require_once("header.php");
 		`results`.`Date` AS MatchDate,
 		`results`.`Bot1AvgFrame` AS Bot1AvgFrame,
 		`results`.`Bot2AvgFrame` AS Bot2AvgFrame,
-		`results`.`Frames` AS Frames
+		`results`.`Frames` AS Frames,
+		`results`.`SeasonId` as SeasonId
 	FROM `participants` AS `participant1`,
 		`participants` AS `participant2`,
 		`results`
@@ -94,15 +95,15 @@ if($_REQUEST['season'] > 5)
 		echo "</td>";
 		if($row['P1ID'] == $_REQUEST['id'])
 		{
-			echo "<td>" . htmlspecialchars($row['P2Name']) . "</td>
+			echo "<td><a href=\"/BotProfile.php?BotId=" . $row['P2ID'] . "&season=" . $row['SeasonId'] . "\">" . htmlspecialchars($row['P2Name']) . "</a></td>
 			<td>" . GetRace($row['P2Race']) . "</td>";
 		}
 		else
 		{
-			echo "<td>" . $row['P1Name'] . "</td>
+			echo "<td><a href=\"/BotProfile.php?BotId=" . $row['P2ID'] . "&season=" . $row['SeasonId'] . "\">" . $row['P1Name'] . "</a></td>
 			<td>" . GetRace($row['P1Race']) . "</td>";
 		}
-		echo "<td>" . $row['Map'] . "</td>";
+		echo "<td>" . linkMapHTML($row['Map']) . "</td>";
 		echo "<td>";
 		if($row['Winner'] == $_REQUEST['id'])
 		{

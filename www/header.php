@@ -36,8 +36,19 @@
 			return 3;
 		}
 		return -1;
-
 	}
+	
+	function linkMapHTML($mapname) {
+		if (!stristr($mapname, '.SC2Map')) { $mapname .= '.SC2Map'; }
+		$link = '/maps/' . $mapname;
+		$viewable = htmlspecialchars(explode('.', $mapname)[0]);
+		$html = <<<"ENDHTML"
+<a href="$link">$viewable</a>
+ENDHTML;
+		return $html;
+	}
+	
+	
 	require_once("dbconf.php");
 	$link = new mysqli($host, $username, $password , $db_name);
 

@@ -105,7 +105,7 @@ session_start();
               
           <ul class="list-group">
             <li class="list-group-item text-muted">Profile</li>
-            <li class="list-group-item text-right"><span class="pull-left"><strong>Games</strong></span> <?php echo htmlspecialchars($BotMatches); ?></li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Games</strong></span><a href="/botmatches.php?id=<?php echo $row['BotID']; ?>&season=<?php echo $CurrentSeason; ?>"><?php echo htmlspecialchars($BotMatches); ?></a></li>
             <li class="list-group-item text-right"><span class="pull-left"><strong>Wins</strong></span> <?php echo htmlspecialchars($BotWins); ?></li>
             <li class="list-group-item text-right"><span class="pull-left"><strong>Current ELO</strong></span> <?php echo htmlspecialchars($row['ELO']); ?></li>
             <li class="list-group-item text-right"><span class="pull-left"><strong>Last Update</strong></span> <?php echo htmlspecialchars($row['UploadedTime']); ?></li>
@@ -150,15 +150,15 @@ session_start();
 			  <div class="panel-heading"><h2>Opponent Stats</h2></div>
 <?php
 
-	function getOppStats($bot_id, $opp_id, $link) {
+	function getOppStats($bot_id, $opp_id, $link, $season_id) {
 		$opp_total_matches = 0;
-		$sql = "SELECT COUNT(*) as Matches FROM results WHERE Bot1='" . $opp_id . "' OR Bot2='" . $opp_id . "' LIMIT 1";
+		$sql = "SELECT COUNT(*) as Matches FROM results WHERE (Bot1='" . $opp_id . "' OR Bot2='" . $opp_id . "') AND SeasonId = '" . $season_id . "' LIMIT 1";
 		$result  = $link->query($sql);
 		if($opp_row = $result->fetch_array(MYSQLI_ASSOC)) {
 			$opp_total_matches = $opp_row['Matches'];
 		}
 		$opp_vs_matches = 0;
-		$sql = "SELECT COUNT(*) as Matches FROM results WHERE (Bot1='" . $opp_id . "' AND Bot2='" . $bot_id . "') OR (Bot1='" . $bot_id . "' AND Bot2='" . $opp_id . "') LIMIT 1";
+		$sql = "SELECT COUNT(*) as Matches FROM results WHERE ((Bot1='" . $opp_id . "' AND Bot2='" . $bot_id . "') OR (Bot1='" . $bot_id . "' AND Bot2='" . $opp_id . "')) AND SeasonId = '" . $season_id . "' LIMIT 1";
 		$result  = $link->query($sql);
 		if($opp_row = $result->fetch_array(MYSQLI_ASSOC)) {
 			$opp_vs_matches = $opp_row['Matches'];
@@ -170,7 +170,7 @@ session_start();
 			$opp_total_wins = $opp_row['Wins'];
 		}
 		$opp_vs_wins = 0;
-		$sql = "SELECT COUNT(*) as Wins FROM results WHERE ((Bot1='" . $opp_id . "' AND Bot2='" . $bot_id . "') OR (Bot1='" . $bot_id . "' AND Bot2='" . $opp_id . "')) AND Winner = '" . $bot_id . "' LIMIT 1";
+		$sql = "SELECT COUNT(*) as Wins FROM results WHERE ((Bot1='" . $opp_id . "' AND Bot2='" . $bot_id . "') OR (Bot1='" . $bot_id . "' AND Bot2='" . $opp_id . "')) AND SeasonId = '" . $season_id . "' AND Winner = '" . $bot_id . "' LIMIT 1";
 		$result  = $link->query($sql);
 		if($opp_row = $result->fetch_array(MYSQLI_ASSOC)) {
 			$opp_vs_wins = $opp_row['Wins'];
@@ -179,7 +179,7 @@ session_start();
 	}
 
 	function getOppRadius($elo, $max_elo, $min_elo) {
-		return (15 * ($elo - $min_elo) / ($max_elo - $min_elo)) + 5;
+		return (8 * ($elo - $min_elo) / ($max_elo - $min_elo)) + 2;
 	}
 	
 	function getLastUpdate($bot_id, $link) {
@@ -192,10 +192,10 @@ session_start();
 		return $last_update;
 	}
 	
-	function getLastResult($bot_id, $opp_id, $link) {
+	function getLastResult($bot_id, $opp_id, $link, $season_id) {
 		$last_result = 'Unknown';
 		$last_date = 'Unknown';
-		$sql = "SELECT Winner, Date FROM results WHERE ((Bot1='" . $opp_id . "' AND Bot2='" . $bot_id . "') OR (Bot1='" . $bot_id . "' AND Bot2='" . $opp_id . "')) ORDER BY Date DESC LIMIT 1";
+		$sql = "SELECT Winner, Date FROM results WHERE ((Bot1='" . $opp_id . "' AND Bot2='" . $bot_id . "') OR (Bot1='" . $bot_id . "' AND Bot2='" . $opp_id . "')) AND SeasonId = '" . $season_id . "' ORDER BY Date DESC LIMIT 1";
 		$result  = $link->query($sql);
 		if($opp_row = $result->fetch_array(MYSQLI_ASSOC)) {
 			if ($opp_row['Winner'] == 0) {
@@ -212,15 +212,15 @@ session_start();
 		return [$last_result, $last_date];
 	}
 	
-	function getEloExchange($bot_id, $opp_id, $link) {
+	function getEloExchange($bot_id, $opp_id, $link, $season_id) {
 		$bot1_exchange = 0;
-		$sql = "SELECT SUM(Bot1Change) as botsum FROM results WHERE (Bot1='" . $bot_id . "' AND Bot2='" . $opp_id . "') LIMIT 1";
+		$sql = "SELECT SUM(Bot1Change) as botsum FROM results WHERE Bot1='" . $bot_id . "' AND Bot2='" . $opp_id . "' AND SeasonId = '" . $season_id . "' LIMIT 1";
 		$result  = $link->query($sql);
 		if($opp_row = $result->fetch_array(MYSQLI_ASSOC)) {
 			$bot1_exchange = $opp_row['botsum'];
 		}
 		$bot2_exchange = 0;
-		$sql = "SELECT SUM(Bot2Change) as botsum FROM results WHERE (Bot2='" . $bot_id . "' AND Bot1='" . $opp_id . "') LIMIT 1";
+		$sql = "SELECT SUM(Bot2Change) as botsum FROM results WHERE Bot2='" . $bot_id . "' AND Bot1='" . $opp_id . "' AND SeasonId = '" . $season_id . "' LIMIT 1";
 		$result  = $link->query($sql);
 		if($opp_row = $result->fetch_array(MYSQLI_ASSOC)) {
 			$bot2_exchange = $opp_row['botsum'];
@@ -238,11 +238,10 @@ session_start();
 		}
 		return $season;
 	}
-
 	if ($CurrentSeason == getMaxSeason($link)) {
 	#this if statement is not closed until the end of the chart code.
 	#not tabbing over because it will make things messy.
-	
+		
 	$max_elo = 0;
 	$min_elo = 0;
 	
@@ -256,10 +255,10 @@ session_start();
 	$terr_radi = '';
 	$rand_radi = '';
 	
-	$zerg_bot_data = '';
-	$toss_bot_data = '';
-	$terr_bot_data = '';
-	$rand_bot_data = '';
+	$terr_info = '';
+	$toss_info = '';
+	$terr_info = '';
+	$rand_info = '';
 
 	$sql = "SELECT MAX(CurrentELO) AS maxELO, MIN(NULLIF(CurrentELO, 0)) AS minELO FROM participants LIMIT 1";
 	$result = $link->query($sql);
@@ -276,11 +275,11 @@ session_start();
 		if ($row['BotID'] == $chartrow['ID']) {
 			continue;
 		}
-		$stats_arr = getOppStats($row['BotID'], $chartrow['ID'], $link);
+		$stats_arr = getOppStats($row['BotID'], $chartrow['ID'], $link, $CurrentSeason);
 		$opp_radius = getOppRadius($chartrow['CurrentELO'], $max_elo, $min_elo);
 		$opp_update = getLastUpdate($chartrow['ID'], $link);
-		$opp_res_arr = getLastResult($row['BotID'], $chartrow['ID'], $link);
-		$elo_exchange = getEloExchange($row['BotID'], $chartrow['ID'], $link);
+		$opp_res_arr = getLastResult($row['BotID'], $chartrow['ID'], $link, $CurrentSeason);
+		$elo_exchange = getEloExchange($row['BotID'], $chartrow['ID'], $link, $CurrentSeason);
 		#chart is actually -50 to +50, not 0-100 as it appears, so adjust down.
 		$overall_win = -50; 
 		$vs_win = -50;
@@ -301,7 +300,6 @@ session_start();
 			$terr_info .= "['" .  htmlspecialchars($chartrow['Name']) . "', '$p_overall_win', '$p_vs_win',";
 			$terr_info .= "'" . $chartrow['CurrentELO'] . "', '$opp_radius', '$rank', '$opp_update', '" . $opp_res_arr[0] . "',  '" . $opp_res_arr[1] . "', ";
 			$terr_info .= "'" . $stats_arr[1] . "', '" . $stats_arr[0] . "', '$elo_exchange'],";
-
 			$terr_data .= "{ x: $overall_win, y: $vs_win },";
 			$terr_radi .= "'" . $opp_radius . "',";
 		}
@@ -309,7 +307,6 @@ session_start();
 			$zerg_info .= "['" .  htmlspecialchars($chartrow['Name']) . "', '$p_overall_win', '$p_vs_win',";
 			$zerg_info .= "'" . $chartrow['CurrentELO'] . "', '$opp_radius', '$rank', '$opp_update', '" . $opp_res_arr[0] . "',  '" . $opp_res_arr[1] . "', ";
 			$zerg_info .= "'" . $stats_arr[1] . "', '" . $stats_arr[0] . "', '$elo_exchange'],";
-
 			$zerg_data .= "{ x: $overall_win, y: $vs_win },";
 			$zerg_radi .= "'" . $opp_radius . "',";
 		}
@@ -317,7 +314,6 @@ session_start();
 			$toss_info .= "['" .  htmlspecialchars($chartrow['Name']) . "', '$p_overall_win', '$p_vs_win',";
 			$toss_info .= "'" . $chartrow['CurrentELO'] . "', '$opp_radius', '$rank', '$opp_update', '" . $opp_res_arr[0] . "',  '" . $opp_res_arr[1] . "', ";
 			$toss_info .= "'" . $stats_arr[1] . "', '" . $stats_arr[0] . "', '$elo_exchange'],";
-
 			$toss_data .= "{ x: $overall_win, y: $vs_win },";
 			$toss_radi .= "'" . $opp_radius . "',";
 		}
@@ -325,7 +321,6 @@ session_start();
 			$rand_info .= "['" .  htmlspecialchars($chartrow['Name']) . "', '$p_overall_win', '$p_vs_win',";
 			$rand_info .= "'" . $chartrow['CurrentELO'] . "', '$opp_radius', '$rank', '$opp_update', '" . $opp_res_arr[0] . "',  '" . $opp_res_arr[1] . "', ";
 			$rand_info .= "'" . $stats_arr[1] . "', '" . $stats_arr[0] . "', '$elo_exchange'],";
-
 			$rand_data .= "{ x: $overall_win, y: $vs_win },";
 			$rand_radi .= "'" . $opp_radius . "',";
 		}
@@ -334,15 +329,50 @@ session_start();
 <canvas id="oppScatterChart" width="400" height="200"></canvas>
 <script>
 	
-function getColor(value) {
-    //value from 0 to 1
-    var hue=((100-(value))*120).toString(10);
-    return ["hsl(",hue,",100%,50%)"].join("");
-}	
+function percentageToHsl(percentage, hue0, hue1) {
+    var hue = (percentage * (hue1 - hue0)) + hue0;
+    return 'hsl(' + hue + ', 100%, 50%)';
+}
+
+function wrapResult(result) {
+	var color = 'rgb(233, 255, 0)';
+	if (result == 'WIN') {
+		color = 'rgb(0, 255, 33)';
+	}
+	else if (result == 'LOSS') {
+		color = 'rgb(255, 0, 0)';
+	}
+	return '<span style="color:' + color + '">' + result + '</span>';
+}
 
 function wrapPercent(value) {
-	color = getColor(value);
-	return '<font style="color:' + color + '">' + value + '</font>';
+	//color = getColor(value);
+	var color = percentageToHsl((value / 100), 0, 120);
+	return '<span style="color:' + color + '">' + value + '%</span>';
+}
+
+function wrapELOExchange(value) {
+	var color = 'rgb(233, 255, 0)';
+	if (value > 0) {
+		color = 'rgb(0, 255, 33)';
+		value = '+' + value;
+	}
+	else if (value < 0) {
+		color = 'rgb(255, 0, 0)';		
+	}
+	return '<span style="color:' + color + '">' + numberWithCommas(value) + '</span>';
+}
+
+function wrapELORank(rank, elo, max_elo, min_elo) {
+	var adj = max_elo - min_elo;
+	var o_adj = elo - min_elo;
+	var adj_elo = o_adj / adj;
+	var color = percentageToHsl(adj_elo, 0, 120);
+	return '<span style="color:' + color + '">' + rank + '</span> (<span style="color:' + color + '">' + numberWithCommas(elo) + '</span>)';
+}
+
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 
@@ -351,6 +381,10 @@ Chart.Legend.prototype.afterFit = function() {
 };
 var basebot = '<?php echo htmlspecialchars($row['BotName']); ?>';
 var ctx = document.getElementById('oppScatterChart');
+var maxELO = '<?php echo $max_elo; ?>';
+var minELO = '<?php echo $min_elo; ?>';
+var ranks = '<?php echo $rank + 1; ?>';
+
 var scatterChart = new Chart(ctx, {
     type: 'scatter',
     data: {
@@ -361,7 +395,8 @@ var scatterChart = new Chart(ctx, {
             info: [<?php echo $toss_info; ?>],
 			pointRadius: [<?php echo $toss_radi; ?>],
 			pointHoverRadius: [<?php echo $toss_radi; ?>],
-			backgroundColor: 'rgba(67, 255, 0, 0.5)'
+			backgroundColor: 'rgba(67, 255, 0, 0.5)',
+			highlightColor: 'rgb(67, 255, 0)'
 			
 			},				   
 			{
@@ -370,7 +405,8 @@ var scatterChart = new Chart(ctx, {
             info: [<?php echo $terr_info; ?>],
 			pointRadius: [<?php echo $terr_radi; ?>],
 			pointHoverRadius: [<?php echo $terr_radi; ?>],
-			backgroundColor: 'rgba(72, 0, 255, 0.5)'
+			backgroundColor: 'rgba(72, 0, 255, 0.5)',
+			highlightColor: 'rgb(0, 127, 255)'
 			},
 			{
             label: 'Zerg',
@@ -378,7 +414,8 @@ var scatterChart = new Chart(ctx, {
             info: [<?php echo $zerg_info; ?>],
 			pointRadius: [<?php echo $zerg_radi; ?>],
 			pointHoverRadius: [<?php echo $zerg_radi; ?>],
-			backgroundColor: 'rgba(255, 4, 0, 0.5)'
+			backgroundColor: 'rgba(255, 4, 0, 0.5)',
+			highlightColor: 'rgb(255, 64, 61)'
 			},
 			{
             label: 'Random',
@@ -386,34 +423,133 @@ var scatterChart = new Chart(ctx, {
             info: [<?php echo $rand_info; ?>],
 			pointRadius: [<?php echo $rand_radi; ?>],
 			pointHoverRadius: [<?php echo $rand_radi; ?>],
-			backgroundColor: 'rgba(225, 255, 0, 0.5)'
+			backgroundColor: 'rgba(225, 255, 0, 0.5)',
+			highlightColor: 'rgb(255, 255, 0)'			
 			}]
     },
     options: {
 		tooltips: {
+			//position: 'custom',
+			yAlign: 'top',
+			xAlign: 'left',
+			enabled: false,
+            custom: function(tooltipModel) {
+                // Tooltip Element
+                var tooltipEl = document.getElementById('chartjs-tooltip');
+
+                // Create element on first render
+                if (!tooltipEl) {
+                    tooltipEl = document.createElement('div');
+                    tooltipEl.id = 'chartjs-tooltip';
+                    tooltipEl.innerHTML = '<table></table>';
+                    document.body.appendChild(tooltipEl);
+                }
+
+                // Hide if no tooltip
+                if (tooltipModel.opacity === 0) {
+                    tooltipEl.style.opacity = 0;
+                    return;
+                }
+
+                // Set caret Position
+                tooltipEl.classList.remove('above', 'below', 'no-transform');
+                if (tooltipModel.yAlign) {
+                    tooltipEl.classList.add(tooltipModel.yAlign);
+                } else {
+                    tooltipEl.classList.add('no-transform');
+                }
+
+                function getBody(bodyItem) {
+                    return bodyItem.lines;
+                }
+
+                // Set Text
+                if (tooltipModel.body) {
+                    var titleLines = tooltipModel.title || [];
+                    var bodyLines = tooltipModel.body.map(getBody);
+                    var innerHtml = '<thead>';
+
+                    titleLines.forEach(function(title) {
+                        innerHtml += '<tr><th>' + title + '</th></tr>';
+                    });
+                    innerHtml += '</thead><tbody>';
+
+                    bodyLines.forEach(function(body, i) {
+                        var colors = tooltipModel.labelColors[i];
+                        var style = 'background:' + colors.backgroundColor;
+                        style += '; border-color:' + colors.borderColor;
+                        style += '; border-width: 2px';
+                        var span = '<span style="' + style + '"></span>';
+                        innerHtml += '<tr><td>' + span + body + '</td></tr>';
+                    });
+                    innerHtml += '</tbody>';
+
+                    var tableRoot = tooltipEl.querySelector('table');
+                    tableRoot.innerHTML = innerHtml;
+                }
+				
+				var position = this._chart.canvas.getBoundingClientRect();	
+                // Display, position, and set styles for font
+                tooltipEl.style.opacity = 1;
+                tooltipEl.style.position = 'absolute';
+				if (tooltipModel.dataPoints[0].xLabel < -40) {
+					//on the far left side, add the car position.
+					tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 100 + 'px';
+				}
+				else if (tooltipModel.dataPoints[0].xLabel > 35) {
+					tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX - 100 + 'px';
+				}
+				else{
+					tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px';
+				}
+
+				if (tooltipModel.dataPoints[0].yLabel < -20) {
+					tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY - 140 + 'px';
+				}
+				else {
+					tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px';
+				}			
+                tooltipEl.style.fontFamily = tooltipModel._bodyFontFamily;
+                tooltipEl.style.fontSize = tooltipModel.bodyFontSize + 'px';
+                tooltipEl.style.fontStyle = tooltipModel._bodyFontStyle;
+                tooltipEl.style.padding = tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px';
+                tooltipEl.style.pointerEvents = 'none';
+            },
 			callbacks: {
-				label: function(tooltipItem, data) {
-					var label = " " + data.datasets[tooltipItem.datasetIndex].info[tooltipItem.index][0] + " ("  + data.datasets[tooltipItem.datasetIndex].label + ")";
-					return label;
-				},
-				afterLabel: function(tooltipItem, data) {
-					//name, overallwin%, win%, elo, radius, rank, last_update, last_result, last_result_date, vs_matches, overall_matches
-					var elo_text = 'Rank (ELO): ' + data.datasets[tooltipItem.datasetIndex].info[tooltipItem.index][5] + " (" + data.datasets[tooltipItem.datasetIndex].info[tooltipItem.index][3] + ")";
-					var exc_text = 'Elo Exchange: ' + data.datasets[tooltipItem.datasetIndex].info[tooltipItem.index][11];
-					var opp_text = "vs. winrate: " + data.datasets[tooltipItem.datasetIndex].info[tooltipItem.index][2] + "% (" + data.datasets[tooltipItem.datasetIndex].info[tooltipItem.index][9] + " matches)";
-					var all_text = 'overall winrate: ' + data.datasets[tooltipItem.datasetIndex].info[tooltipItem.index][1] + '% (' + data.datasets[tooltipItem.datasetIndex].info[tooltipItem.index][10] + " matches)";
-					var last_text = 'last game: ' + data.datasets[tooltipItem.datasetIndex].info[tooltipItem.index][7] + ' (' + data.datasets[tooltipItem.datasetIndex].info[tooltipItem.index][8] + ')';
-					var last_update = 'last update: ' + data.datasets[tooltipItem.datasetIndex].info[tooltipItem.index][6];					
-					return [elo_text, exc_text, opp_text, all_text, last_text, last_update];
-				}				
-			}
+                labeltest: function(tooltipItem, data) {
+                    var dataset = data.datasets[tooltipItem.datasetIndex];
+                    var tooltip = dataset.info[tooltipItem.index];
+                    var html = "<div class=\"tooltip_title\"><b>" + tooltip[0] + "</b>";
+                    html += " <span style=\"color:" + dataset.highlightColor + ";\">" + dataset.label + "</span></div>";
+                    html += '<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">Rank (ELO):</div><div class=\"tooltip_row_right\">' + wrapELORank(tooltip[5], tooltip[3], maxELO, minELO) + "</div></div>";
+                    html += "<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">Overall Winrate:</div><div class=\"tooltip_row_right\">" + numberWithCommas(tooltip[10]) + " matches " + wrapPercent(tooltip[1]) + "</div></div>";
+                    html += "<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">Vs. Winrate:</div><div class=\"tooltip_row_right\">" + numberWithCommas(tooltip[9]) + " matches " + wrapPercent(tooltip[2]) + "</div></div>";
+                    html += '<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">ELO Exchange:</div><div class=\"tooltip_row_right\">' + wrapELOExchange(tooltip[11]) + "</div></div>";
+                      html += '<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">Last Match:</div><div class=\"tooltip_row_right\">' + tooltip[8] + " " + wrapResult(tooltip[7]) + '</div></div>';
+                    html += '<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">Last Update:</div><div class=\"tooltip_row_right\">' + tooltip[6] + "</div></div>";
+                    return html;
+                },
+                label: function(tooltipItem, data) {
+                    var dataset = data.datasets[tooltipItem.datasetIndex];
+                    var tooltip = dataset.info[tooltipItem.index];
+                    var html = "<div class=\"tooltip_title\"><b>" + tooltip[0] + "</b>";
+                    html += " <span style=\"color:" + dataset.highlightColor + ";\">" + dataset.label + "</span></div>";
+                    html += '<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">Rank (ELO):</div><div class=\"tooltip_row_right\">' + wrapELORank(tooltip[5], tooltip[3], maxELO, minELO) + "</div></div>";
+                    html += "<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">Overall Winrate:</div><div class=\"tooltip_row_right\">" + wrapPercent(tooltip[1]) + ' ' + numberWithCommas(tooltip[10]) + " matches</div></div>";
+                    html += '<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">ELO Exchange:</div><div class=\"tooltip_row_right\">' + wrapELOExchange(tooltip[11]) + "</div></div>";
+                    html += "<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">Vs. Winrate:</div><div class=\"tooltip_row_right\">" + wrapPercent(tooltip[2]) + " " + numberWithCommas(tooltip[9]) + " matches</div></div>";
+                    html += '<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">Last Match:</div><div class=\"tooltip_row_right\">' + wrapResult(tooltip[7]) + ' ' + tooltip[8] + '</div></div>';
+                    html += '<div class=\"tooltip_row\"><div class=\"tooltip_row_left\">Last Update:</div><div class=\"tooltip_row_right\">' + tooltip[6] + "</div></div>";
+                    return html;
+                },					
+            }
 		},
 		layout: {
             padding: {
                 left: 0,
                 right: 0,
                 top: 0,
-                bottom: 0
+                bottom: 20
             }
         },	
 		legend: {
@@ -470,7 +606,7 @@ var scatterChart = new Chart(ctx, {
 </script>
 
 <?php
-}  #end of chart code.################################
+	} #end of chart code.################################
 ?>
 
               <div class="table-responsive">
@@ -492,7 +628,8 @@ var scatterChart = new Chart(ctx, {
 			`participants`.`Race` AS Race,
 			`participants`.`CurrentELO` AS ELO,
 			`members`.`username` AS username,
-			`members`.`Alias` AS Alias
+			`members`.`Alias` AS Alias,
+			`members`.id as authId
 			FROM `participants`, `members`
 			WHERE `participants`.`Author` = `members`.`id`";
 	$OpponentResult = $link->query($sql);
@@ -506,6 +643,7 @@ var scatterChart = new Chart(ctx, {
 		$Nextbot = new BotRecord();
 		$Nextbot->botid = $opponentRow['ID'];
 		$Nextbot->botname = $opponentRow['Name'];
+		$Nextbot->authID = $opponentRow['authId'];
 		if(!isset($row['Alias']) || $row['Alias'] == "")
 		{
 			$Nextbot->author= $opponentRow['username'];
@@ -572,8 +710,8 @@ var scatterChart = new Chart(ctx, {
 	  if($Bot->matches > 0)
 	  {
                   echo "<tr>
-                      <td>" . htmlspecialchars($Bot->author) . "</td>
-                      <td>" . htmlspecialchars($Bot->botname) . "</td>
+                      <td><a href=\"/AuthorProfile.php?author=" . $Bot->authID . "\">"  . htmlspecialchars($Bot->author) . "</a></td>
+                      <td><a href=\"/BotProfile.php?BotId=" . $Bot->botid . "&season=" . $CurrentSeason . "\">" . htmlspecialchars($Bot->botname) . "</a></td>
                       <td>" . $Bot->race . "</td>
                       <td>" . $Bot->matches . "</td>
                       <td>" . $Bot->wins . "</td>
@@ -613,4 +751,3 @@ var scatterChart = new Chart(ctx, {
 
   </body>
 </html>
-                                                      
