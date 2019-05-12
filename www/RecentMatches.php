@@ -1,6 +1,26 @@
 <?php
 session_start();
 require_once("header.php");
+//get the last match and show it as in progress if less than 60 minutes since started.
+$sql = "SELECT participant1.Name as Bot1,
+	   participant1.ID as Bot1ID,
+       participant2.Name as Bot2,
+	   participant2.ID as Bot2ID,
+       MapName,
+	   ROUND((UNIX_TIMESTAMP() - UNIX_TIMESTAMP(MatchTime)) / 60) as Started
+FROM matches
+INNER JOIN participants AS participant1 ON participant1.ID = matches.Bot1ID
+INNER JOIN participants AS participant2 ON participant2.ID = matches.Bot2ID
+ORDER BY MatchId DESC
+LIMIT 1";
+$result = $link->query($sql);
+if($entry = $result->fetch_array(MYSQLI_ASSOC)) {
+	if ($entry['Started'] < 60) {
+		echo "<h3>In progress:</h3><a href=\"/BotProfile.php?BotId=" . $entry['Bot1ID'] . "\">";
+		echo htmlspecialchars($entry['Bot1']) . "</a> vs <a href=\"/BotProfile.php?BotId=" . $entry['Bot2ID'] . "\">";
+		echo htmlspecialchars($entry['Bot2']) . "</a> started on " . linkMapHTML($entry['MapName']) . " " . $entry['Started'] . " minutes ago<br>";
+	}
+}
 ?>
 <h3>Showing 100 most recent results.</h3>
 <?php
@@ -18,7 +38,8 @@ $sql = "SELECT DATE_FORMAT(`Date`, '%Y-%m-%d %H:%i:%s') as Date,
        Bot2Change,
        Bot1AvgFrame,
        Bot2AvgFrame,
-       Frames
+       Frames,
+	   SeasonId
 FROM results
 INNER JOIN participants AS participant1 ON participant1.ID = results.Bot1
 INNER JOIN participants AS participant2 ON participant2.ID = results.Bot2
@@ -53,9 +74,9 @@ if ($result->num_rows < 1) {
         <?php while ($row = $result->fetch_assoc()) { ?>
         <tr>
             <td> <?php echo htmlspecialchars($row['Date']); ?>  </td>
-            <td> <?php echo htmlspecialchars($row['Bot1']); ?>  </td>
-            <td> <?php echo htmlspecialchars($row['Bot2']); ?>  </td>
-            <td> <?php echo htmlspecialchars($row['Map']); ?>  </td>
+            <td> <a href="/BotProfile.php?BotId=<?php echo $row['Bot1ID'] ?>&season=<?php echo $row['SeasonId'] ?>"><?php echo htmlspecialchars($row['Bot1']); ?></a></td>
+            <td> <a href="/BotProfile.php?BotId=<?php echo $row['Bot2ID'] ?>&season=<?php echo $row['SeasonId'] ?>"><?php echo htmlspecialchars($row['Bot2']); ?></a></td>
+            <td> <?php echo linkMapHTML($row['Map']); ?>  </td>
             <td> 
                 <?php 
                 if($row['Winner'] == $row['Bot1ID'] )
