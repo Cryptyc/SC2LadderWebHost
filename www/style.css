@@ -231,3 +231,66 @@ a.article, a.article:hover {
 a.download-btn {
     margin: 0;
 }
+canvas {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+    
+#chartjs-tooltip {
+    opacity: 1;
+    position: absolute;
+    background: rgba(0, 0, 0, .9);
+    color: white;
+    border-radius: 3px;
+    -webkit-transition: all .1s ease;
+    transition: all .1s ease;
+    pointer-events: none;
+    -webkit-transform: translate(-50%, 0);
+    transform: translate(-50%, 0);
+    line-height: 16px;
+    font-size: 12px;
+    margin-top: 5px;
+}
+.chartjs-tooltip-key {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 10px;
+}
+
+.tooltip_title {
+    width: 100%;
+    min-width: 220px;
+    line-height: 20px;
+    border-bottom-width: 1px;
+    border-bottom-color: #fff;
+    border-bottom-style: solid;
+    margin-bottom: 3px;
+    font-size: 14px;
+    text-transform: uppercase;
+    font-family: 'Fira Sans', sans-serif;
+}
+.tooltip_title b {
+    font-size: 14px;
+    text-transform: none;
+    font-family: 'Poppins', sans-serif;
+    font-weight: normal;
+}
+.tooltip_row {
+    width: 100%;
+}
+
+.tooltip_row_left {
+    width: 35%;
+    float: left;
+    white-space: nowrap;
+    
+}
+.tooltip_row_right{
+    float: left;
+    width: 65%;
+    text-align: right;
+    white-space: nowrap;
+    
+}
