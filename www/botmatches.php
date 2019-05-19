@@ -100,7 +100,7 @@ if($_REQUEST['season'] > 5)
 		}
 		else
 		{
-			echo "<td><a href=\"/BotProfile.php?BotId=" . $row['P2ID'] . "&season=" . $row['SeasonId'] . "\">" . $row['P1Name'] . "</a></td>
+			echo "<td><a href=\"/BotProfile.php?BotId=" . $row['P1ID'] . "&season=" . $row['SeasonId'] . "\">" . $row['P1Name'] . "</a></td>
 			<td>" . GetRace($row['P1Race']) . "</td>";
 		}
 		echo "<td>" . linkMapHTML($row['Map']) . "</td>";
